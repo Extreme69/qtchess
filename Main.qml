@@ -118,12 +118,18 @@ ApplicationWindow {
                             drag.target: parent
 
                             onReleased: {
-                                // Update position on release, adjust as per the grid.
-                                var newX = Math.floor(parent.x / (chessBoardContainer.width / 8));
-                                var newY = Math.floor(parent.y / (chessBoardContainer.height / 8));
-                                pieceItem.position = { x: newX, y: newY };
-                                parent.x = newX * (chessBoardContainer.width / 8);
-                                parent.y = newY * (chessBoardContainer.height / 8);
+                                // Calculate nearest grid coordinates based on mouse release position
+                                var gridWidth = chessBoard.width / 8;
+                                var gridHeight = chessBoard.height / 8;
+
+                                // Calculate the closest x and y grid indices
+                                var newX = Math.floor((parent.x + gridWidth / 2) / gridWidth);
+                                var newY = Math.floor((parent.y + gridHeight / 2) / gridHeight);
+
+                                // Update piece position on the board
+                                pieceItem.position = newX + "," + newY;
+                                parent.x = newX * gridWidth; // Snap to nearest x
+                                parent.y = newY * gridHeight; // Snap to nearest y
                             }
 
                             onPressed: {
