@@ -8,6 +8,31 @@ ApplicationWindow {
     visible: true
     title: qsTr("Chess Game")
 
+    property string currentPlayer: "white"  // Track whose turn it is ("white" or "black")
+
+    // Display whose turn it is
+    Rectangle {
+        id: turnDisplayContainer
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        width: parent.width * 0.15
+        height: parent.height * 0.05
+        border.color: "black"
+        border.width: 2
+        anchors.topMargin: 20 // Keep it 20px down from the top
+
+        // Inside the Rectangle, add the Text element
+        Text {
+            id: turnDisplay
+            anchors.centerIn: parent
+            text: currentPlayer === "white" ? "White's Turn" : "Black's Turn"
+            font.bold: true
+            font.pixelSize: 24
+            padding: 10
+        }
+    }
+
+
     // Create a Rectangle to act as the border for the chessboard
     Rectangle {
         id: boardContainer
@@ -43,45 +68,45 @@ ApplicationWindow {
             // Define chess pieces
             Repeater {
                 model: [
-                    // White pieces
-                    { piece: "rook", color: "white", position: "0,0" },
-                    { piece: "knight", color: "white", position: "1,0" },
-                    { piece: "bishop", color: "white", position: "2,0" },
-                    { piece: "queen", color: "white", position: "3,0" },
-                    { piece: "king", color: "white", position: "4,0" },
-                    { piece: "bishop", color: "white", position: "5,0" },
-                    { piece: "knight", color: "white", position: "6,0" },
-                    { piece: "rook", color: "white", position: "7,0" },
+                    // Black pieces (on the white side)
+                    { piece: "rook", color: "black", position: "0,0" },
+                    { piece: "knight", color: "black", position: "1,0" },
+                    { piece: "bishop", color: "black", position: "2,0" },
+                    { piece: "queen", color: "black", position: "3,0" },
+                    { piece: "king", color: "black", position: "4,0" },
+                    { piece: "bishop", color: "black", position: "5,0" },
+                    { piece: "knight", color: "black", position: "6,0" },
+                    { piece: "rook", color: "black", position: "7,0" },
 
-                    // Black pieces
-                    { piece: "rook", color: "black", position: "0,7" },
-                    { piece: "knight", color: "black", position: "1,7" },
-                    { piece: "bishop", color: "black", position: "2,7" },
-                    { piece: "queen", color: "black", position: "3,7" },
-                    { piece: "king", color: "black", position: "4,7" },
-                    { piece: "bishop", color: "black", position: "5,7" },
-                    { piece: "knight", color: "black", position: "6,7" },
-                    { piece: "rook", color: "black", position: "7,7" },
+                    // White pieces (on the black side)
+                    { piece: "rook", color: "white", position: "0,7" },
+                    { piece: "knight", color: "white", position: "1,7" },
+                    { piece: "bishop", color: "white", position: "2,7" },
+                    { piece: "queen", color: "white", position: "3,7" },
+                    { piece: "king", color: "white", position: "4,7" },
+                    { piece: "bishop", color: "white", position: "5,7" },
+                    { piece: "knight", color: "white", position: "6,7" },
+                    { piece: "rook", color: "white", position: "7,7" },
 
-                    // White pawns
-                    { piece: "pawn", color: "white", position: "0,1" },
-                    { piece: "pawn", color: "white", position: "1,1" },
-                    { piece: "pawn", color: "white", position: "2,1" },
-                    { piece: "pawn", color: "white", position: "3,1" },
-                    { piece: "pawn", color: "white", position: "4,1" },
-                    { piece: "pawn", color: "white", position: "5,1" },
-                    { piece: "pawn", color: "white", position: "6,1" },
-                    { piece: "pawn", color: "white", position: "7,1" },
+                    // Black pawns (on the white side)
+                    { piece: "pawn", color: "black", position: "0,1" },
+                    { piece: "pawn", color: "black", position: "1,1" },
+                    { piece: "pawn", color: "black", position: "2,1" },
+                    { piece: "pawn", color: "black", position: "3,1" },
+                    { piece: "pawn", color: "black", position: "4,1" },
+                    { piece: "pawn", color: "black", position: "5,1" },
+                    { piece: "pawn", color: "black", position: "6,1" },
+                    { piece: "pawn", color: "black", position: "7,1" },
 
-                    // Black pawns
-                    { piece: "pawn", color: "black", position: "0,6" },
-                    { piece: "pawn", color: "black", position: "1,6" },
-                    { piece: "pawn", color: "black", position: "2,6" },
-                    { piece: "pawn", color: "black", position: "3,6" },
-                    { piece: "pawn", color: "black", position: "4,6" },
-                    { piece: "pawn", color: "black", position: "5,6" },
-                    { piece: "pawn", color: "black", position: "6,6" },
-                    { piece: "pawn", color: "black", position: "7,6" }
+                    // White pawns (on the black side)
+                    { piece: "pawn", color: "white", position: "0,6" },
+                    { piece: "pawn", color: "white", position: "1,6" },
+                    { piece: "pawn", color: "white", position: "2,6" },
+                    { piece: "pawn", color: "white", position: "3,6" },
+                    { piece: "pawn", color: "white", position: "4,6" },
+                    { piece: "pawn", color: "white", position: "5,6" },
+                    { piece: "pawn", color: "white", position: "6,6" },
+                    { piece: "pawn", color: "white", position: "7,6" }
                 ]
 
                 delegate: Item {
@@ -117,6 +142,9 @@ ApplicationWindow {
                             anchors.fill: parent
                             drag.target: parent
 
+                            // Disable dragging if it's not the current player's piece
+                            enabled: pieceItem.color === currentPlayer
+
                             onReleased: {
                                 // Calculate nearest grid coordinates based on mouse release position
                                 var gridWidth = chessBoard.width / 8;
@@ -130,12 +158,15 @@ ApplicationWindow {
                                 pieceItem.position = newX + "," + newY;
                                 parent.x = newX * gridWidth; // Snap to nearest x
                                 parent.y = newY * gridHeight; // Snap to nearest y
+
+                                // Switch turn after move
+                                currentPlayer = (currentPlayer === "white") ? "black" : "white";
                             }
 
                             onPressed: {
                                 // Store initial position before drag starts
-                                pieceItem.position = { x: Math.floor(parent.x / (chessBoardContainer.width / 8)),
-                                                       y: Math.floor(parent.y / (chessBoardContainer.height / 8)) };
+                                pieceItem.position = { x: Math.floor(parent.x / (chessBoard.width / 8)),
+                                                       y: Math.floor(parent.y / (chessBoard.height / 8)) };
                             }
 
                             drag.axis: Drag.XandY
