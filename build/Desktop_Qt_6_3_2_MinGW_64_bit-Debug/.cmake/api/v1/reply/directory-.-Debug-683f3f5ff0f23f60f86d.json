@@ -17,7 +17,7 @@
 			{
 				"command" : 0,
 				"file" : 0,
-				"line" : 62,
+				"line" : 44,
 				"parent" : 0
 			}
 		]
@@ -30,10 +30,10 @@
 			"destination" : "bin",
 			"paths" : 
 			[
-				"chess.exe"
+				"appchess.exe"
 			],
-			"targetId" : "chess::@6890427a1f51a3e7e1df",
-			"targetIndex" : 0,
+			"targetId" : "appchess::@6890427a1f51a3e7e1df",
+			"targetIndex" : 2,
 			"type" : "target"
 		}
 	],

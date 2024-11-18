@@ -158,7 +158,7 @@ build all_qmllint: phony appchess_qmllint
 #############################################
 # Utility command for appchess_tooling
 
-build appchess_tooling: phony chess/Main.qml
+build appchess_tooling: phony chess/Main.qml chess/resources.qrc
 
 
 #############################################
@@ -295,7 +295,7 @@ build .rcc/qmlcache/appchess_Main_qml.cpp | ${cmake_ninja_workdir}.rcc/qmlcache/
 #############################################
 # Custom command for .rcc\qrc_appchess_raw_qml_0.cpp
 
-build .rcc/qrc_appchess_raw_qml_0.cpp | ${cmake_ninja_workdir}.rcc/qrc_appchess_raw_qml_0.cpp: CUSTOM_COMMAND C$:/Users/m_lehmden/Documents/chess/Main.qml .rcc/appchess_raw_qml_0.qrc C$:/Qt/6.3.2/mingw_64/./bin/rcc.exe || appchess_autogen appchess_autogen_timestamp_deps appchess_qmlimportscan appchess_tooling
+build .rcc/qrc_appchess_raw_qml_0.cpp | ${cmake_ninja_workdir}.rcc/qrc_appchess_raw_qml_0.cpp: CUSTOM_COMMAND C$:/Users/m_lehmden/Documents/chess/Main.qml C$:/Users/m_lehmden/Documents/chess/resources.qrc .rcc/appchess_raw_qml_0.qrc C$:/Qt/6.3.2/mingw_64/./bin/rcc.exe || appchess_autogen appchess_autogen_timestamp_deps appchess_qmlimportscan appchess_tooling
   COMMAND = C:\Windows\system32\cmd.exe /C "cd /D C:\Users\m_lehmden\Documents\chess\build\Desktop_Qt_6_3_2_MinGW_64_bit-Debug && C:\Qt\6.3.2\mingw_64\.\bin\rcc.exe --output C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qrc_appchess_raw_qml_0.cpp --name appchess_raw_qml_0 C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/appchess_raw_qml_0.qrc --no-zstd"
   DESC = Running rcc for resource appchess_raw_qml_0
   restat = 1
@@ -340,6 +340,15 @@ build CMakeFiles/appchess_qmllint | ${cmake_ninja_workdir}CMakeFiles/appchess_qm
 build chess/Main.qml | ${cmake_ninja_workdir}chess/Main.qml: CUSTOM_COMMAND C$:/Users/m_lehmden/Documents/chess/Main.qml
   COMMAND = C:\Windows\system32\cmd.exe /C "cd /D C:\Users\m_lehmden\Documents\chess && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/m_lehmden/Documents/chess/Main.qml C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/chess/Main.qml"
   DESC = Generating chess/Main.qml
+  restat = 1
+
+
+#############################################
+# Custom command for chess\resources.qrc
+
+build chess/resources.qrc | ${cmake_ninja_workdir}chess/resources.qrc: CUSTOM_COMMAND C$:/Users/m_lehmden/Documents/chess/resources.qrc
+  COMMAND = C:\Windows\system32\cmd.exe /C "cd /D C:\Users\m_lehmden\Documents\chess && C:\Qt\Tools\CMake_64\bin\cmake.exe -E copy C:/Users/m_lehmden/Documents/chess/resources.qrc C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/chess/resources.qrc"
+  DESC = Generating chess/resources.qrc
   restat = 1
 
 

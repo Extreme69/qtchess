@@ -7,7 +7,7 @@
 				{
 					"build" : ".",
 					"hasInstallRule" : true,
-					"jsonFile" : "directory-.-Debug-a4c143662d5a946f77ef.json",
+					"jsonFile" : "directory-.-Debug-683f3f5ff0f23f60f86d.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.16"
@@ -58,21 +58,21 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "all_qmllint::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-all_qmllint-Debug-0aebeae11225a6441b58.json",
+					"jsonFile" : "target-all_qmllint-Debug-8878d01f588f512cd41f.json",
 					"name" : "all_qmllint",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "all_qmltyperegistrations::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-all_qmltyperegistrations-Debug-a38c6443ede17e52e4cc.json",
+					"jsonFile" : "target-all_qmltyperegistrations-Debug-b4d1784afc21215be382.json",
 					"name" : "all_qmltyperegistrations",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "appchess::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appchess-Debug-affa2a6fc620b648187e.json",
+					"jsonFile" : "target-appchess-Debug-65ffb2af161d94ec6071.json",
 					"name" : "appchess",
 					"projectIndex" : 0
 				},
@@ -93,7 +93,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "appchess_other_files::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appchess_other_files-Debug-2b529b83ab7a180d2fc6.json",
+					"jsonFile" : "target-appchess_other_files-Debug-9c289337016baa99ed97.json",
 					"name" : "appchess_other_files",
 					"projectIndex" : 0
 				},
@@ -107,21 +107,21 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "appchess_qmllint::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appchess_qmllint-Debug-e1c3719b31ef76547482.json",
+					"jsonFile" : "target-appchess_qmllint-Debug-da6ca07e44d64fd5db94.json",
 					"name" : "appchess_qmllint",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "appchess_qmltyperegistration::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appchess_qmltyperegistration-Debug-c74c47381289ce9b2c05.json",
+					"jsonFile" : "target-appchess_qmltyperegistration-Debug-9156062f3af12fb30360.json",
 					"name" : "appchess_qmltyperegistration",
 					"projectIndex" : 0
 				},
 				{
 					"directoryIndex" : 0,
 					"id" : "appchess_tooling::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-appchess_tooling-Debug-3b39b53c6750ddd1aee5.json",
+					"jsonFile" : "target-appchess_tooling-Debug-be2b6d67488b3b4a73ee.json",
 					"name" : "appchess_tooling",
 					"projectIndex" : 0
 				}

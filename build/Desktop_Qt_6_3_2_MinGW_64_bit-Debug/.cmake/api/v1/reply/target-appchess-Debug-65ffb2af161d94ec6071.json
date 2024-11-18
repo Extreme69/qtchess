@@ -80,7 +80,7 @@
 			{
 				"command" : 3,
 				"file" : 1,
-				"line" : 11,
+				"line" : 13,
 				"parent" : 0
 			},
 			{
@@ -104,19 +104,19 @@
 			{
 				"command" : 4,
 				"file" : 1,
-				"line" : 38,
+				"line" : 44,
 				"parent" : 0
 			},
 			{
 				"command" : 5,
 				"file" : 1,
-				"line" : 33,
+				"line" : 38,
 				"parent" : 0
 			},
 			{
 				"command" : 8,
 				"file" : 1,
-				"line" : 8,
+				"line" : 10,
 				"parent" : 0
 			},
 			{
@@ -152,7 +152,7 @@
 			{
 				"command" : 10,
 				"file" : 1,
-				"line" : 15,
+				"line" : 19,
 				"parent" : 0
 			},
 			{
@@ -951,19 +951,19 @@
 	"dependencies" : 
 	[
 		{
-			"id" : "appchess_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
-		},
-		{
-			"backtrace" : 0,
-			"id" : "appchess_autogen::@6890427a1f51a3e7e1df"
-		},
-		{
 			"backtrace" : 75,
 			"id" : "appchess_qmlimportscan::@6890427a1f51a3e7e1df"
 		},
 		{
 			"backtrace" : 77,
 			"id" : "appchess_tooling::@6890427a1f51a3e7e1df"
+		},
+		{
+			"backtrace" : 0,
+			"id" : "appchess_autogen::@6890427a1f51a3e7e1df"
+		},
+		{
+			"id" : "appchess_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "appchess::@6890427a1f51a3e7e1df",

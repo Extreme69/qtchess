@@ -27,7 +27,7 @@
 			{
 				"command" : 5,
 				"file" : 2,
-				"line" : 15,
+				"line" : 19,
 				"parent" : 0
 			},
 			{
@@ -89,6 +89,18 @@
 				"file" : 0,
 				"line" : 2037,
 				"parent" : 10
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 2152,
+				"parent" : 9
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 2037,
+				"parent" : 12
 			}
 		]
 	},
@@ -106,7 +118,8 @@
 			"sourceIndexes" : 
 			[
 				0,
-				1
+				1,
+				2
 			]
 		}
 	],
@@ -120,6 +133,11 @@
 		{
 			"backtrace" : 11,
 			"path" : "Main.qml",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 13,
+			"path" : "resources.qrc",
 			"sourceGroupIndex" : 0
 		}
 	],

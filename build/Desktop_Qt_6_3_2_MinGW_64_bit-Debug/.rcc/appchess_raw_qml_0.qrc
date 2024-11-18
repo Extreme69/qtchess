@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="/chess/">
     <file alias="Main.qml">C:/Users/m_lehmden/Documents/chess/Main.qml</file>
+    <file alias="resources.qrc">C:/Users/m_lehmden/Documents/chess/resources.qrc</file>
   </qresource>
 </RCC>
 

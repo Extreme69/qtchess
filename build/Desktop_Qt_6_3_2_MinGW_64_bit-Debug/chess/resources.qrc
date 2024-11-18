@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/pieces">
+        <file>images/rook_white.png</file>
+    </qresource>
+</RCC>
