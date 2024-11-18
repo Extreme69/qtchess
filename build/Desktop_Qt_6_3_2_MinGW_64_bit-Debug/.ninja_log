@@ -52,3 +52,14 @@
 426	492	7536424268077396	CMakeFiles/appchess.dir/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qrc_appchess_raw_qml_0.cpp.obj	7e3947bd9f0fd7b0
 424	2445	7536424268057447	CMakeFiles/appchess.dir/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qmlcache/appchess_Main_qml.cpp.obj	8859e3b4dc770858
 2445	2774	7536424288166332	appchess.exe	5d3806896f2c6ff5
+15	60	7536426130596903	chess/Main.qml	285bb1b82105d84
+15	60	7536426130596903	D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/chess/Main.qml	285bb1b82105d84
+22	195	7536426131840977	.qt_plugins/Qt6_QmlPlugins_Imports_appchess.cmake	3d39117e45458e91
+22	195	7536426131840977	D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.qt_plugins/Qt6_QmlPlugins_Imports_appchess.cmake	3d39117e45458e91
+202	253	7536426132417908	.rcc/qrc_appchess_raw_qml_0.cpp	dab59dcaf53d329d
+202	253	7536426132417908	D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qrc_appchess_raw_qml_0.cpp	dab59dcaf53d329d
+195	408	7536426133616266	.rcc/qmlcache/appchess_Main_qml.cpp	d64a0ce1e6324044
+195	408	7536426133616266	D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qmlcache/appchess_Main_qml.cpp	d64a0ce1e6324044
+411	480	7536426134175712	CMakeFiles/appchess.dir/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qrc_appchess_raw_qml_0.cpp.obj	7e3947bd9f0fd7b0
+408	2451	7536426134084883	CMakeFiles/appchess.dir/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qmlcache/appchess_Main_qml.cpp.obj	8859e3b4dc770858
+2451	2783	7536426154572978	appchess.exe	5d3806896f2c6ff5
