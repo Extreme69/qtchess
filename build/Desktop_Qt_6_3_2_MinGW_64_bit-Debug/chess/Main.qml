@@ -111,6 +111,29 @@ ApplicationWindow {
                             width: parent.width * 0.8
                             height: parent.height * 0.8
                         }
+
+                        MouseArea {
+                            id: dragArea
+                            anchors.fill: parent
+                            drag.target: parent
+
+                            onReleased: {
+                                // Update position on release, adjust as per the grid.
+                                var newX = Math.floor(parent.x / (chessBoardContainer.width / 8));
+                                var newY = Math.floor(parent.y / (chessBoardContainer.height / 8));
+                                pieceItem.position = { x: newX, y: newY };
+                                parent.x = newX * (chessBoardContainer.width / 8);
+                                parent.y = newY * (chessBoardContainer.height / 8);
+                            }
+
+                            onPressed: {
+                                // Store initial position before drag starts
+                                pieceItem.position = { x: Math.floor(parent.x / (chessBoardContainer.width / 8)),
+                                                       y: Math.floor(parent.y / (chessBoardContainer.height / 8)) };
+                            }
+
+                            drag.axis: Drag.XandY
+                        }
                     }
                 }
             }
