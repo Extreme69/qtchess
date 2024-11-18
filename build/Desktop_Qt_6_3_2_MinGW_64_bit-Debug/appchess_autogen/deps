@@ -158,11 +158,12 @@ appchess_autogen/timestamp: \
 	C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/Platform/Windows-windres.cmake \
 	C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/Platform/Windows.cmake \
 	C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/Platform/WindowsPaths.cmake \
-	C:/Users/m_lehmden/Documents/chess/CMakeLists.txt \
-	C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.qtc/package-manager/auto-setup.cmake \
-	C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qmlcache/appchess_qmlcache_loader.cpp \
-	C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeCXXCompiler.cmake \
-	C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeRCCompiler.cmake \
-	C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeSystem.cmake \
-	C:/Users/m_lehmden/Documents/chess/main.cpp \
+	D:/lehmden/qtchess/CMakeLists.txt \
+	D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.qtc/package-manager/auto-setup.cmake \
+	D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qmlcache/appchess_qmlcache_loader.cpp \
+	D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeCXXCompiler.cmake \
+	D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeRCCompiler.cmake \
+	D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeSystem.cmake \
+	D:/lehmden/qtchess/main.cpp \
+	D:/lehmden/qtchess/resources.qrc \
 	C:/Qt/Tools/CMake_64/bin/cmake.exe

@@ -4,6 +4,7 @@ project(chess VERSION 0.1 LANGUAGES CXX)
 
 # Enable automatic handling of Qt meta-object, resource, and translation files
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find the required Qt6 components
@@ -12,6 +13,7 @@ find_package(Qt6 6.2 REQUIRED COMPONENTS Quick)
 # Add the executable target and resource file
 qt_add_executable(appchess
     main.cpp
+    resources.qrc
 )
 
 

@@ -1,18 +1,18 @@
 {
 	"AUTOGEN_COMMAND_LINE_LENGTH_MAX" : 32000,
-	"BUILD_DIR" : "C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_autogen",
-	"CMAKE_BINARY_DIR" : "C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug",
-	"CMAKE_CURRENT_BINARY_DIR" : "C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug",
-	"CMAKE_CURRENT_SOURCE_DIR" : "C:/Users/m_lehmden/Documents/chess",
+	"BUILD_DIR" : "D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_autogen",
+	"CMAKE_BINARY_DIR" : "D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug",
+	"CMAKE_CURRENT_BINARY_DIR" : "D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug",
+	"CMAKE_CURRENT_SOURCE_DIR" : "D:/lehmden/qtchess",
 	"CMAKE_EXECUTABLE" : "C:/Qt/Tools/CMake_64/bin/cmake.exe",
 	"CMAKE_LIST_FILES" : 
 	[
-		"C:/Users/m_lehmden/Documents/chess/CMakeLists.txt",
-		"C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.qtc/package-manager/auto-setup.cmake",
-		"C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeSystem.cmake",
+		"D:/lehmden/qtchess/CMakeLists.txt",
+		"D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.qtc/package-manager/auto-setup.cmake",
+		"D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeSystem.cmake",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/CMakeSystemSpecificInitialize.cmake",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/Platform/Windows-Initialize.cmake",
-		"C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeCXXCompiler.cmake",
+		"D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeCXXCompiler.cmake",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/CMakeSystemSpecificInformation.cmake",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/CMakeGenericSystem.cmake",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/CMakeInitializeConfigs.cmake",
@@ -25,7 +25,7 @@
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/Compiler/CMakeCommonCompilerMacros.cmake",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/Platform/Windows-GNU-CXX.cmake",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/Platform/Windows-GNU.cmake",
-		"C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeRCCompiler.cmake",
+		"D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/3.29.3/CMakeRCCompiler.cmake",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/CMakeRCInformation.cmake",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/Platform/Windows-windres.cmake",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/Platform/Windows-GNU-CXX-ABI.cmake",
@@ -334,16 +334,17 @@
 		"C:/Qt/6.3.2/mingw_64/lib/cmake/Qt6Core/Qt6CoreConfigureFileTemplate.in",
 		"C:/Qt/6.3.2/mingw_64/lib/cmake/Qt6Core/Qt6CoreConfigureFileTemplate.in",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/GNUInstallDirs.cmake",
-		"C:/Qt/6.3.2/mingw_64/lib/cmake/Qt6Qml/Qt6qmldirTemplate.cmake.in"
+		"C:/Qt/6.3.2/mingw_64/lib/cmake/Qt6Qml/Qt6qmldirTemplate.cmake.in",
+		"D:/lehmden/qtchess/resources.qrc"
 	],
-	"CMAKE_SOURCE_DIR" : "C:/Users/m_lehmden/Documents/chess",
+	"CMAKE_SOURCE_DIR" : "D:/lehmden/qtchess",
 	"CROSS_CONFIG" : false,
-	"DEP_FILE" : "C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_autogen/deps",
+	"DEP_FILE" : "D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "appchess_autogen/timestamp",
 	"HEADERS" : [],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
-	"INCLUDE_DIR" : "C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_autogen/include",
-	"MOC_COMPILATION_FILE" : "C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_autogen/mocs_compilation.cpp",
+	"INCLUDE_DIR" : "D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_autogen/include",
+	"MOC_COMPILATION_FILE" : "D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_autogen/mocs_compilation.cpp",
 	"MOC_DEFINITIONS" : 
 	[
 		"MINGW_HAS_SECURE_API=1",
@@ -372,7 +373,7 @@
 	],
 	"MOC_INCLUDES" : 
 	[
-		"C:/Users/m_lehmden/Documents/chess",
+		"D:/lehmden/qtchess",
 		"C:/Qt/6.3.2/mingw_64/include/QtQml/6.3.2",
 		"C:/Qt/6.3.2/mingw_64/include/QtQml/6.3.2/QtQml",
 		"C:/Qt/6.3.2/mingw_64/include/QtCore/6.3.2",
@@ -412,31 +413,31 @@
 		"-c",
 		"C:/Qt/Tools/CMake_64/share/cmake-3.29/Modules/CMakeCXXCompilerABI.cpp"
 	],
-	"MOC_PREDEFS_FILE" : "C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_autogen/moc_predefs.h",
+	"MOC_PREDEFS_FILE" : "D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_autogen/moc_predefs.h",
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : 
 	[
-		"C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qmlcache/appchess_Main_qml.cpp",
-		"C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qrc_appchess_raw_qml_0.cpp",
-		"C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qrc_qmake_chess.cpp",
-		"C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_qmltyperegistrations.cpp"
+		"D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qmlcache/appchess_Main_qml.cpp",
+		"D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qrc_appchess_raw_qml_0.cpp",
+		"D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qrc_qmake_chess.cpp",
+		"D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/appchess_qmltyperegistrations.cpp"
 	],
 	"MULTI_CONFIG" : false,
-	"PARALLEL" : 6,
-	"PARSE_CACHE_FILE" : "C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/appchess_autogen.dir/ParseCache.txt",
+	"PARALLEL" : 2,
+	"PARSE_CACHE_FILE" : "D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/appchess_autogen.dir/ParseCache.txt",
 	"QT_MOC_EXECUTABLE" : "C:/Qt/6.3.2/mingw_64/./bin/moc.exe",
 	"QT_UIC_EXECUTABLE" : "",
 	"QT_VERSION_MAJOR" : 6,
 	"QT_VERSION_MINOR" : 3,
-	"SETTINGS_FILE" : "C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/appchess_autogen.dir/AutogenUsed.txt",
+	"SETTINGS_FILE" : "D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/CMakeFiles/appchess_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
 		[
-			"C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qmlcache/appchess_qmlcache_loader.cpp",
+			"D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/.rcc/qmlcache/appchess_qmlcache_loader.cpp",
 			"Mu",
 			null
 		],
-		[ "C:/Users/m_lehmden/Documents/chess/main.cpp", "Mu", null ]
+		[ "D:/lehmden/qtchess/main.cpp", "Mu", null ]
 	],
 	"USE_BETTER_GRAPH" : false,
 	"VERBOSITY" : 0

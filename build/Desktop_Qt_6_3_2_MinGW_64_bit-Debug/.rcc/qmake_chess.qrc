@@ -1,6 +1,6 @@
 <RCC>
   <qresource prefix="/chess">
-    <file alias="qmldir">C:/Users/m_lehmden/Documents/chess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/chess/qmldir</file>
+    <file alias="qmldir">D:/lehmden/qtchess/build/Desktop_Qt_6_3_2_MinGW_64_bit-Debug/chess/qmldir</file>
   </qresource>
 </RCC>
 
