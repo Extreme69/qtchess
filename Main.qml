@@ -3,10 +3,9 @@ import QtQuick.Controls 2.15
 
 ApplicationWindow {
     id: window
-    width: Screen.width
-    height: Screen.height
     visible: true
     title: qsTr("Chess Game")
+    visibility: Window.Maximized
 
     property string currentPlayer: "white"  // Track whose turn it is ("white" or "black")
 
