@@ -14,6 +14,7 @@ find_package(Qt6 6.2 REQUIRED COMPONENTS Quick)
 qt_add_executable(appchess
     main.cpp
     resources.qrc
+    ChessPiece.qml
 )
 
 
@@ -21,10 +22,8 @@ qt_add_executable(appchess
 qt_add_qml_module(appchess
     URI chess
     VERSION 1.0
-    QML_FILES
-        Main.qml
-    RESOURCES
-        resources.qrc
+    QML_FILES Main.qml ChessPiece.qml
+    RESOURCES resources.qrc
 )
 
 set(CMAKE_AUTORCC ON) # Add this line
