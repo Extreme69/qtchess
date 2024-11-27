@@ -4,19 +4,18 @@ Item {
     property string piece
     property string color
     property string position
+    property bool selected: false // Track if this piece is selected
 
-    // Parse the position string (e.g., "0,0") into separate x and y coordinates
     property int posX: parseInt(position.split(",")[0])
     property int posY: parseInt(position.split(",")[1])
 
     Rectangle {
-        width: 100 // Adjust as per your board size
+        width: 100
         height: 100
-        color: "transparent"
+        color: selected ? "lightblue" : "transparent" // Highlight selected piece
         x: posX * width
         y: posY * height
 
-        // Display piece image
         Image {
             source: "qrc:/pieces/images/" + piece + "_" + color + ".png"
             anchors.centerIn: parent
@@ -25,38 +24,32 @@ Item {
         }
 
         MouseArea {
-            id: dragArea
+            id: selectArea
             anchors.fill: parent
-            drag.target: parent
 
-            // Disable dragging if it's not the current player's piece
-            enabled: color === window.currentPlayer
-
-            onReleased: {
-                // Calculate nearest grid coordinates based on mouse release position
-                var gridWidth = parent.width;
-                var gridHeight = parent.height;
-
-                // Calculate the closest x and y grid indices
-                var newX = Math.floor((parent.x + gridWidth / 2) / gridWidth);
-                var newY = Math.floor((parent.y + gridHeight / 2) / gridHeight);
-
-                // Update piece position on the board
-                position = newX + "," + newY;
-                parent.x = newX * gridWidth; // Snap to nearest x
-                parent.y = newY * gridHeight; // Snap to nearest y
-
-                // Switch turn after move
-                window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
+            onClicked: {
+                if (window.selectedPiece === "") {
+                    // Select the piece if no piece is selected
+                    window.selectedPiece = position;
+                } else {
+                    // If a piece is selected, move it to the clicked position
+                    if (window.selectedPiece === position) {
+                        // Deselect the piece if the same piece is clicked again
+                        window.selectedPiece = "";
+                    } else {
+                        // Update the selected piece's position
+                        var selectedPieceIndex = piecesModel.findIndex(piece => piece.position === window.selectedPiece);
+                        if (selectedPieceIndex !== -1) {
+                            // Update position in the model
+                            piecesModel.get(selectedPieceIndex).position = position;
+                        }
+                        // Switch turn after move
+                        window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
+                        // Deselect after move
+                        window.selectedPiece = "";
+                    }
+                }
             }
-
-            onPressed: {
-                // Store initial position before drag starts
-                position = { x: Math.floor(parent.x / (parent.width)),
-                            y: Math.floor(parent.y / (parent.height)) };
-            }
-
-            drag.axis: Drag.XandY
         }
     }
 }
