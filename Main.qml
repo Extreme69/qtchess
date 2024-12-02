@@ -132,8 +132,7 @@ ApplicationWindow {
 
             // Use ChessboardLabels component
             ChessboardLabels {
-                boardWidth: chessBoard.width
-                boardHeight: chessBoard.height
+
             }
         }
     }

@@ -1,43 +1,43 @@
 import QtQuick 2.15
 
 Item {
-    property real boardWidth: 0
-    property real boardHeight: 0
+    // Dynamically calculate the font size based on the smaller dimension of the chessboard
+    property real fontSize: Math.min(chessBoard.width, chessBoard.height) / 35
 
-    // Add letters (A-H) along the top and bottom
+    // Repeater to create letters (A-H) along the top and bottom
     Repeater {
         model: 8
         Rectangle {
-            width: parent.boardWidth / 8
-            height: 30
+            width: chessBoard.width / 8
+            height: fontSize * 2
             color: "transparent"
-            x: index * (parent.boardWidth / 8)
-            y: -30
+            x: index * (chessBoard.width / 8)
+            y: -fontSize * 2  // Position letters above the chessboard
 
             Text {
                 anchors.centerIn: parent
-                text: String.fromCharCode(65 + index) // Letters A to H
+                text: String.fromCharCode(65 + index)  // Letters A to H
                 font.bold: true
-                font.pixelSize: 18
+                font.pixelSize: fontSize  // Apply dynamic font size
             }
         }
     }
 
-    // Add numbers (1-8) along the left and right
+    // Repeater to create numbers (1-8) along the left and right
     Repeater {
         model: 8
         Rectangle {
-            width: 30
-            height: parent.boardHeight / 8
+            width: fontSize * 2
+            height: chessBoard.height / 8
             color: "transparent"
-            x: -30
-            y: index * (parent.boardHeight / 8)
+            x: -fontSize * 2  // Position numbers on the left
+            y: index * (chessBoard.height / 8)
 
             Text {
                 anchors.centerIn: parent
-                text: (8 - index).toString() // Numbers 1 to 8
+                text: (8 - index).toString()  // Numbers 1 to 8
                 font.bold: true
-                font.pixelSize: 18
+                font.pixelSize: fontSize  // Apply dynamic font size
             }
         }
     }
