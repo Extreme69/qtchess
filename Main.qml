@@ -82,8 +82,42 @@ ApplicationWindow {
                     border.color: "black"
                     x: (index % 8) * (chessBoard.width / 8)
                     y: Math.floor(index / 8) * (chessBoard.height / 8)
+
+                    // Extract row and column from index
+                    property int row: Math.floor(index / 8)
+                    property int col: index % 8
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            if (window.selectedPiece !== "") {
+                                // Find the selected piece in the model
+                                var selectedPieceIndex = -1;
+                                for (var i = 0; i < piecesModel.count; i++) {
+                                    if (piecesModel.get(i).position === window.selectedPiece) {
+                                        selectedPieceIndex = i;
+                                        break;
+                                    }
+                                }
+
+                                if (selectedPieceIndex !== -1) {
+                                    // Update the selected piece's position
+                                    piecesModel.set(selectedPieceIndex, {
+                                        piece: piecesModel.get(selectedPieceIndex).piece,
+                                        color: piecesModel.get(selectedPieceIndex).color,
+                                        position: col + "," + row // Convert col, row to position string
+                                    });
+                                }
+
+                                // Deselect the piece and switch turn
+                                window.selectedPiece = "";
+                                window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
+                            }
+                        }
+                    }
                 }
             }
+
 
             // Define chess pieces using ChessPiece component
             Repeater {
