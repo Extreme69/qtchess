@@ -13,62 +13,46 @@ ApplicationWindow {
     // Define pieces as a ListModel
     ListModel {
         id: piecesModel
-        ListElement { piece: "rook"; color: "black"; position: "0,0" }
-        ListElement { piece: "knight"; color: "black"; position: "1,0" }
-        ListElement { piece: "bishop"; color: "black"; position: "2,0" }
-        ListElement { piece: "queen"; color: "black"; position: "3,0" }
-        ListElement { piece: "king"; color: "black"; position: "4,0" }
-        ListElement { piece: "bishop"; color: "black"; position: "5,0" }
-        ListElement { piece: "knight"; color: "black"; position: "6,0" }
-        ListElement { piece: "rook"; color: "black"; position: "7,0" }
+        ListElement { piece: "rook"; color: "black"; position: "0,0"; selected: false }
+        ListElement { piece: "knight"; color: "black"; position: "1,0"; selected: false }
+        ListElement { piece: "bishop"; color: "black"; position: "2,0"; selected: false }
+        ListElement { piece: "queen"; color: "black"; position: "3,0"; selected: false }
+        ListElement { piece: "king"; color: "black"; position: "4,0"; selected: false }
+        ListElement { piece: "bishop"; color: "black"; position: "5,0"; selected: false }
+        ListElement { piece: "knight"; color: "black"; position: "6,0"; selected: false }
+        ListElement { piece: "rook"; color: "black"; position: "7,0"; selected: false }
 
-        ListElement { piece: "rook"; color: "white"; position: "0,7" }
-        ListElement { piece: "knight"; color: "white"; position: "1,7" }
-        ListElement { piece: "bishop"; color: "white"; position: "2,7" }
-        ListElement { piece: "queen"; color: "white"; position: "3,7" }
-        ListElement { piece: "king"; color: "white"; position: "4,7" }
-        ListElement { piece: "bishop"; color: "white"; position: "5,7" }
-        ListElement { piece: "knight"; color: "white"; position: "6,7" }
-        ListElement { piece: "rook"; color: "white"; position: "7,7" }
+        ListElement { piece: "rook"; color: "white"; position: "0,7"; selected: false }
+        ListElement { piece: "knight"; color: "white"; position: "1,7"; selected: false }
+        ListElement { piece: "bishop"; color: "white"; position: "2,7"; selected: false }
+        ListElement { piece: "queen"; color: "white"; position: "3,7"; selected: false }
+        ListElement { piece: "king"; color: "white"; position: "4,7"; selected: false }
+        ListElement { piece: "bishop"; color: "white"; position: "5,7"; selected: false }
+        ListElement { piece: "knight"; color: "white"; position: "6,7"; selected: false }
+        ListElement { piece: "rook"; color: "white"; position: "7,7"; selected: false }
 
-        ListElement { piece: "pawn"; color: "black"; position: "0,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "1,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "2,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "3,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "4,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "5,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "6,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "7,1" }
+        ListElement { piece: "pawn"; color: "black"; position: "0,1"; selected: false }
+        ListElement { piece: "pawn"; color: "black"; position: "1,1"; selected: false }
+        ListElement { piece: "pawn"; color: "black"; position: "2,1"; selected: false }
+        ListElement { piece: "pawn"; color: "black"; position: "3,1"; selected: false }
+        ListElement { piece: "pawn"; color: "black"; position: "4,1"; selected: false }
+        ListElement { piece: "pawn"; color: "black"; position: "5,1"; selected: false}
+        ListElement { piece: "pawn"; color: "black"; position: "6,1"; selected: false }
+        ListElement { piece: "pawn"; color: "black"; position: "7,1"; selected: false }
 
-        ListElement { piece: "pawn"; color: "white"; position: "0,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "1,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "2,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "3,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "4,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "5,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "6,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "7,6" }
+        ListElement { piece: "pawn"; color: "white"; position: "0,6"; selected: false }
+        ListElement { piece: "pawn"; color: "white"; position: "1,6"; selected: false }
+        ListElement { piece: "pawn"; color: "white"; position: "2,6"; selected: false }
+        ListElement { piece: "pawn"; color: "white"; position: "3,6"; selected: false }
+        ListElement { piece: "pawn"; color: "white"; position: "4,6"; selected: false }
+        ListElement { piece: "pawn"; color: "white"; position: "5,6"; selected: false }
+        ListElement { piece: "pawn"; color: "white"; position: "6,6"; selected: false }
+        ListElement { piece: "pawn"; color: "white"; position: "7,6"; selected: false }
     }
 
     // Display whose turn it is
-    Rectangle {
-        id: turnDisplayContainer
-        anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width * 0.15
-        height: parent.height * 0.05
-        border.color: "black"
-        border.width: 2
-        anchors.topMargin: 20
-
-        Text {
-            id: turnDisplay
-            anchors.centerIn: parent
-            text: currentPlayer === "white" ? "White's Turn" : "Black's Turn"
-            font.bold: true
-            font.pixelSize: 24
-            padding: 10
-        }
+    TurnDisplay {
+        currentPlayer: currentPlayer  // Pass currentPlayer to TurnDisplay
     }
 
     Rectangle {
@@ -103,14 +87,13 @@ ApplicationWindow {
 
             // Define chess pieces using ChessPiece component
             Repeater {
-                model: piecesModel // Use piecesModel for the chess pieces
+                model: piecesModel
                 delegate: ChessPiece {
                     piece: model.piece
                     color: model.color
                     position: model.position
-                    selected: model.position === window.selectedPiece // Set the selected state
-                    x: (parseInt(model.position.split(',')[0])) * (chessBoard.width / 8) // Convert position to x coordinate
-                    y: (parseInt(model.position.split(',')[1])) * (chessBoard.height / 8) // Convert position to y coordinate and flip the row
+                    x: (parseInt(model.position.split(',')[0])) * (chessBoard.width / 8)
+                    y: (parseInt(model.position.split(',')[1])) * (chessBoard.height / 8)
                 }
             }
 

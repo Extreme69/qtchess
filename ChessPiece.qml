@@ -4,17 +4,17 @@ Item {
     property string piece
     property string color
     property string position
-    property bool selected: false // Track if this piece is selected
+    property bool selected: false
 
     property int posX: parseInt(position.split(",")[0])
     property int posY: parseInt(position.split(",")[1])
 
+    width: parent.width / 8 // Dynamically scale with the chessboard grid
+    height: parent.height / 8
+
     Rectangle {
-        width: 100
-        height: 100
-        color: selected ? "lightblue" : "transparent" // Highlight selected piece
-        x: posX * width
-        y: posY * height
+        anchors.fill: parent
+        color: selected ? "lightblue" : "transparent"
 
         Image {
             source: "qrc:/pieces/images/" + piece + "_" + color + ".png"
@@ -26,28 +26,38 @@ Item {
         MouseArea {
             id: selectArea
             anchors.fill: parent
-
             onClicked: {
-                if (window.selectedPiece === "") {
-                    // Select the piece if no piece is selected
-                    window.selectedPiece = position;
+                if (window.selectedPiece === position) {
+                    // Deselect the piece
+                    selected = false;
+                    window.selectedPiece = "";
                 } else {
-                    // If a piece is selected, move it to the clicked position
-                    if (window.selectedPiece === position) {
-                        // Deselect the piece if the same piece is clicked again
-                        window.selectedPiece = "";
-                    } else {
-                        // Update the selected piece's position
-                        var selectedPieceIndex = piecesModel.findIndex(piece => piece.position === window.selectedPiece);
-                        if (selectedPieceIndex !== -1) {
-                            // Update position in the model
-                            piecesModel.get(selectedPieceIndex).position = position;
+                    // Select this piece
+                    selected = true;
+                    window.selectedPiece = position;
+
+                    // Deselect any previously selected piece
+                    for (let i = 0; i < piecesModel.count; i++) {
+                        if (piecesModel.get(i).position !== position) {
+                            piecesModel.set(i, {
+                                piece: piecesModel.get(i).piece,
+                                color: piecesModel.get(i).color,
+                                position: piecesModel.get(i).position,
+                                selected: false // Explicitly set `selected` to false
+                            });
                         }
-                        // Switch turn after move
-                        window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
-                        // Deselect after move
-                        window.selectedPiece = "";
                     }
+                }
+
+                // Update the selected state in the model
+                const index = piecesModel.findIndex(piece => piece.position === position);
+                if (index !== -1) {
+                    piecesModel.set(index, {
+                        piece: piecesModel.get(index).piece,
+                        color: piecesModel.get(index).color,
+                        position: piecesModel.get(index).position,
+                        selected: selected // Update selected state explicitly
+                    });
                 }
             }
         }
