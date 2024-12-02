@@ -23,15 +23,15 @@ Item {
             id: selectArea
             anchors.fill: parent
             onClicked: {
+                // Ensure only the current player can select their pieces
                 if (window.selectedPiece === position) {
                     // Deselect the piece if clicked again
                     window.selectedPiece = "";
-                } else {
-                    // Select this piece
+                } else if (color === window.currentPlayer) {
+                    // Select the piece if it's the current player's turn
                     window.selectedPiece = position;
                 }
             }
         }
     }
 }
-

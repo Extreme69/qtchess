@@ -52,7 +52,7 @@ ApplicationWindow {
 
     // Display whose turn it is
     TurnDisplay {
-        currentPlayer: currentPlayer  // Pass currentPlayer to TurnDisplay
+        currentPlayer: window.currentPlayer  // Pass currentPlayer to TurnDisplay
     }
 
     Rectangle {
@@ -117,7 +117,6 @@ ApplicationWindow {
                     }
                 }
             }
-
 
             // Define chess pieces using ChessPiece component
             Repeater {
