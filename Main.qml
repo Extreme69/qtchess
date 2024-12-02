@@ -130,42 +130,10 @@ ApplicationWindow {
                 }
             }
 
-            // Add letters (A-H) along the top and bottom
-            Repeater {
-                model: 8
-                Rectangle {
-                    width: chessBoard.width / 8
-                    height: 30
-                    color: "transparent"
-                    x: index * (chessBoard.width / 8)
-                    y: -30
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: String.fromCharCode(65 + index) // Letters A to H
-                        font.bold: true
-                        font.pixelSize: 18
-                    }
-                }
-            }
-
-            // Add numbers (1-8) along the left and right
-            Repeater {
-                model: 8
-                Rectangle {
-                    width: 30
-                    height: chessBoard.height / 8
-                    color: "transparent"
-                    x: -30
-                    y: index * (chessBoard.height / 8)
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: (8 - index).toString() // Numbers 1 to 8
-                        font.bold: true
-                        font.pixelSize: 18
-                    }
-                }
+            // Use ChessboardLabels component
+            ChessboardLabels {
+                boardWidth: chessBoard.width
+                boardHeight: chessBoard.height
             }
         }
     }

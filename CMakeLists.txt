@@ -16,6 +16,7 @@ qt_add_executable(appchess
     resources.qrc
     ChessPiece.qml
     TurnDisplay.qml
+    ChessboardLabels.qml
 )
 
 
@@ -23,7 +24,7 @@ qt_add_executable(appchess
 qt_add_qml_module(appchess
     URI chess
     VERSION 1.0
-    QML_FILES Main.qml ChessPiece.qml TurnDisplay.qml
+    QML_FILES Main.qml ChessPiece.qml TurnDisplay.qml ChessboardLabels.qml
     RESOURCES resources.qrc
 )
 
