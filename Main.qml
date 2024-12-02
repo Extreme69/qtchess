@@ -9,48 +9,102 @@ ApplicationWindow {
 
     property string currentPlayer: "white"
     property string selectedPiece: "" // Track selected piece
+    property string pieceToCapture: "" // Track enemy piece to capture
 
     // Define pieces as a ListModel
     ListModel {
         id: piecesModel
-        ListElement { piece: "rook"; color: "black"; position: "0,0"; selected: false }
-        ListElement { piece: "knight"; color: "black"; position: "1,0"; selected: false }
-        ListElement { piece: "bishop"; color: "black"; position: "2,0"; selected: false }
-        ListElement { piece: "queen"; color: "black"; position: "3,0"; selected: false }
-        ListElement { piece: "king"; color: "black"; position: "4,0"; selected: false }
-        ListElement { piece: "bishop"; color: "black"; position: "5,0"; selected: false }
-        ListElement { piece: "knight"; color: "black"; position: "6,0"; selected: false }
-        ListElement { piece: "rook"; color: "black"; position: "7,0"; selected: false }
-
-        ListElement { piece: "rook"; color: "white"; position: "0,7"; selected: false }
-        ListElement { piece: "knight"; color: "white"; position: "1,7"; selected: false }
-        ListElement { piece: "bishop"; color: "white"; position: "2,7"; selected: false }
-        ListElement { piece: "queen"; color: "white"; position: "3,7"; selected: false }
-        ListElement { piece: "king"; color: "white"; position: "4,7"; selected: false }
-        ListElement { piece: "bishop"; color: "white"; position: "5,7"; selected: false }
-        ListElement { piece: "knight"; color: "white"; position: "6,7"; selected: false }
-        ListElement { piece: "rook"; color: "white"; position: "7,7"; selected: false }
-
-        ListElement { piece: "pawn"; color: "black"; position: "0,1"; selected: false }
-        ListElement { piece: "pawn"; color: "black"; position: "1,1"; selected: false }
-        ListElement { piece: "pawn"; color: "black"; position: "2,1"; selected: false }
-        ListElement { piece: "pawn"; color: "black"; position: "3,1"; selected: false }
-        ListElement { piece: "pawn"; color: "black"; position: "4,1"; selected: false }
-        ListElement { piece: "pawn"; color: "black"; position: "5,1"; selected: false}
-        ListElement { piece: "pawn"; color: "black"; position: "6,1"; selected: false }
-        ListElement { piece: "pawn"; color: "black"; position: "7,1"; selected: false }
-
-        ListElement { piece: "pawn"; color: "white"; position: "0,6"; selected: false }
-        ListElement { piece: "pawn"; color: "white"; position: "1,6"; selected: false }
-        ListElement { piece: "pawn"; color: "white"; position: "2,6"; selected: false }
-        ListElement { piece: "pawn"; color: "white"; position: "3,6"; selected: false }
-        ListElement { piece: "pawn"; color: "white"; position: "4,6"; selected: false }
-        ListElement { piece: "pawn"; color: "white"; position: "5,6"; selected: false }
-        ListElement { piece: "pawn"; color: "white"; position: "6,6"; selected: false }
-        ListElement { piece: "pawn"; color: "white"; position: "7,6"; selected: false }
+        ListElement { piece: "rook"; color: "black"; position: "0,0" }
+        ListElement { piece: "knight"; color: "black"; position: "1,0" }
+        ListElement { piece: "bishop"; color: "black"; position: "2,0" }
+        ListElement { piece: "queen"; color: "black"; position: "3,0" }
+        ListElement { piece: "king"; color: "black"; position: "4,0" }
+        ListElement { piece: "bishop"; color: "black"; position: "5,0" }
+        ListElement { piece: "knight"; color: "black"; position: "6,0" }
+        ListElement { piece: "rook"; color: "black"; position: "7,0" }
+        ListElement { piece: "rook"; color: "white"; position: "0,7" }
+        ListElement { piece: "knight"; color: "white"; position: "1,7" }
+        ListElement { piece: "bishop"; color: "white"; position: "2,7" }
+        ListElement { piece: "queen"; color: "white"; position: "3,7" }
+        ListElement { piece: "king"; color: "white"; position: "4,7" }
+        ListElement { piece: "bishop"; color: "white"; position: "5,7" }
+        ListElement { piece: "knight"; color: "white"; position: "6,7" }
+        ListElement { piece: "rook"; color: "white"; position: "7,7" }
+        ListElement { piece: "pawn"; color: "black"; position: "0,1" }
+        ListElement { piece: "pawn"; color: "black"; position: "1,1" }
+        ListElement { piece: "pawn"; color: "black"; position: "2,1" }
+        ListElement { piece: "pawn"; color: "black"; position: "3,1" }
+        ListElement { piece: "pawn"; color: "black"; position: "4,1" }
+        ListElement { piece: "pawn"; color: "black"; position: "5,1" }
+        ListElement { piece: "pawn"; color: "black"; position: "6,1" }
+        ListElement { piece: "pawn"; color: "black"; position: "7,1" }
+        ListElement { piece: "pawn"; color: "white"; position: "0,6" }
+        ListElement { piece: "pawn"; color: "white"; position: "1,6" }
+        ListElement { piece: "pawn"; color: "white"; position: "2,6" }
+        ListElement { piece: "pawn"; color: "white"; position: "3,6" }
+        ListElement { piece: "pawn"; color: "white"; position: "4,6" }
+        ListElement { piece: "pawn"; color: "white"; position: "5,6" }
+        ListElement { piece: "pawn"; color: "white"; position: "6,6" }
+        ListElement { piece: "pawn"; color: "white"; position: "7,6" }
     }
 
-    // Display whose turn it is
+    // This function will be triggered when the pieceToCapture changes
+    function handleCapture(enemyPiece) {
+        console.log("Capturing enemy piece at " + window.pieceToCapture);
+        // Remove the captured piece from the model
+        piecesModel.remove(enemyPiece);
+
+        // Reset the pieceToCapture after the capture
+        window.pieceToCapture = "";
+    }
+
+    // Handle the movement of a piece
+    function handlePieceMovement(piece, targetPosition) {
+        // Find the index of the selected piece in the model
+        var selectedPieceIndex = -1;
+        for (var i = 0; i < piecesModel.count; i++) {
+            if (piecesModel.get(i).position === piece) {
+                selectedPieceIndex = i;
+                break;
+            }
+        }
+
+        // If the piece is found in the model, update its position
+        if (selectedPieceIndex !== -1) {
+            var selectedPiece = piecesModel.get(selectedPieceIndex);
+
+            // Move the piece to the target position
+            piecesModel.set(selectedPieceIndex, {
+                piece: selectedPiece.piece,
+                color: selectedPiece.color,
+                position: targetPosition
+            });
+
+            // Switch turn after the move
+            window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
+        }
+    }
+
+    // Automatically call handleCapture whenever pieceToCapture changes
+    onPieceToCaptureChanged: {
+        if (window.pieceToCapture !== ""){
+            var thePiece
+            console.log("Finding the piece position")
+            // Find the enemy piece to capture
+            for (var i = 0; i < piecesModel.count; i++) {
+                var enemyPiece = piecesModel.get(i);
+                if (enemyPiece.position === window.pieceToCapture) {
+                    thePiece = enemyPiece
+                    break
+                }
+            }
+            console.log("The piece to delete is in the position: " + thePiece.position)
+
+            handleCapture(thePiece);
+            handlePieceMovement(window.selectedPiece, thePiece.position);
+        }
+    }
+
     TurnDisplay {
         currentPlayer: window.currentPlayer  // Pass currentPlayer to TurnDisplay
     }
@@ -91,7 +145,6 @@ ApplicationWindow {
                         anchors.fill: parent
                         onClicked: {
                             if (window.selectedPiece !== "") {
-                                // Find the selected piece in the model
                                 var selectedPieceIndex = -1;
                                 for (var i = 0; i < piecesModel.count; i++) {
                                     if (piecesModel.get(i).position === window.selectedPiece) {
@@ -101,17 +154,15 @@ ApplicationWindow {
                                 }
 
                                 if (selectedPieceIndex !== -1) {
-                                    // Update the selected piece's position
-                                    piecesModel.set(selectedPieceIndex, {
-                                        piece: piecesModel.get(selectedPieceIndex).piece,
-                                        color: piecesModel.get(selectedPieceIndex).color,
-                                        position: col + "," + row // Convert col, row to position string
-                                    });
+                                    var selectedPiece = piecesModel.get(selectedPieceIndex);
+                                    var targetPosition = col + "," + row;
+
+                                    // Handle the piece movement to the target position
+                                    handlePieceMovement(selectedPiece.position, targetPosition);
                                 }
 
                                 // Deselect the piece and switch turn
                                 window.selectedPiece = "";
-                                window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
                             }
                         }
                     }
@@ -131,9 +182,7 @@ ApplicationWindow {
             }
 
             // Use ChessboardLabels component
-            ChessboardLabels {
-
-            }
+            ChessboardLabels {}
         }
     }
 }

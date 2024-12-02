@@ -5,7 +5,7 @@ Item {
     property string color
     property string position
 
-    width: parent.width / 8 // Dynamically scale with the chessboard grid
+    width: parent.width / 8
     height: parent.height / 8
 
     Rectangle {
@@ -30,6 +30,9 @@ Item {
                 } else if (color === window.currentPlayer) {
                     // Select the piece if it's the current player's turn
                     window.selectedPiece = position;
+                } else if (window.selectedPiece !== "" && color !== window.currentPlayer) {
+                    // Select a piece to capture
+                    window.pieceToCapture = position;
                 }
             }
         }
