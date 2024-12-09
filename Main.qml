@@ -89,6 +89,8 @@ ApplicationWindow {
                 position: targetPosition
             });
 
+            //Deselect the selected piece
+            window.selectedPiece = ""
             // Switch turn after the move
             window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
         }
@@ -96,12 +98,15 @@ ApplicationWindow {
 
     // Automatically call handleCapture whenever pieceToCapture changes
     onPieceToCaptureChanged: {
-        if(window.pieceToCapture !== ""){
-            var thePiecePos = window.pieceToCapture
+        if(window.selectedPiece !== ""){
+            // Piece not selected
+            if(window.pieceToCapture !== ""){
+                var thePiecePos = window.pieceToCapture
 
-            handleCapture();
-            // If a capture occurred, handle the movement
-            handlePieceMovement(window.selectedPiece, thePiecePos);
+                handleCapture();
+                // If a capture occurred, handle the movement
+                handlePieceMovement(window.selectedPiece, thePiecePos);
+            }
         }
     }
 
