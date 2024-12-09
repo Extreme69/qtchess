@@ -27,9 +27,11 @@ Item {
                 if (window.selectedPiece === position) {
                     // Deselect the piece if clicked again
                     window.selectedPiece = "";
+                    window.highlightedMoves = [];
                 } else if (color === window.currentPlayer) {
                     // Select the piece if it's the current player's turn
                     window.selectedPiece = position;
+                    window.highlightedMoves = calculateValidMoves(piece, position);
                 } else if (window.selectedPiece !== "" && color !== window.currentPlayer) {
                     // Select a piece to capture
                     window.pieceToCapture = position;
@@ -37,4 +39,22 @@ Item {
             }
         }
     }
+
+    function calculateValidMoves(piece, position) {
+        var moves = [];
+        var col = parseInt(position.split(",")[0]);
+        var row = parseInt(position.split(",")[1]);
+
+        if (piece === "rook") {
+            // Example: Add all horizontal and vertical moves
+            for (var i = 0; i < 8; i++) {
+                moves.push(i + "," + row);
+                moves.push(col + "," + i);
+            }
+        }
+        // Add logic for other pieces...
+
+        return moves;
+    }
+
 }

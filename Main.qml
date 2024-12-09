@@ -10,6 +10,7 @@ ApplicationWindow {
     property string currentPlayer: "white"
     property string selectedPiece: "" // Track selected piece
     property string pieceToCapture: "" // Track enemy piece to capture
+    property var highlightedMoves: []
 
     // Define pieces as a ListModel
     ListModel {
@@ -173,6 +174,20 @@ ApplicationWindow {
                     }
                 }
             }
+
+            // Highlights
+            Repeater {
+                model: 64
+                Rectangle {
+                    width: chessBoard.width / 8
+                    height: chessBoard.height / 8
+                    x: (index % 8) * (chessBoard.width / 8)
+                    y: Math.floor(index / 8) * (chessBoard.height / 8)
+                    color: (window.highlightedMoves.indexOf(index % 8 + "," + Math.floor(index / 8)) !== -1) ? "rgba(0, 255, 0, 0.5)" : "transparent"
+                    z: -1
+                }
+            }
+
 
             // Define chess pieces using ChessPiece component
             Repeater {
