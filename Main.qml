@@ -49,13 +49,22 @@ ApplicationWindow {
     }
 
     // This function will be triggered when the pieceToCapture changes
-    function handleCapture(enemyPiece) {
-        console.log("Capturing enemy piece at " + window.pieceToCapture);
-        // Remove the captured piece from the model
-        piecesModel.remove(enemyPiece);
-
-        // Reset the pieceToCapture after the capture
-        window.pieceToCapture = "";
+    function handleCapture() {
+        if (window.pieceToCapture !== "") {
+            // Find the enemy piece to capture
+            for (var i = 0; i < piecesModel.count; i++) {
+                var enemyPiece = piecesModel.get(i);
+                if (enemyPiece.position === window.pieceToCapture && enemyPiece.color !== window.currentPlayer) {
+                    // Capture the piece
+                    console.log("Capturing enemy piece at " + window.pieceToCapture);
+                    // Remove the captured piece from the model
+                    piecesModel.remove(i);
+                    break;  // Exit after removing the piece
+                }
+            }
+            // Reset the pieceToCapture after the capture
+            window.pieceToCapture = "";
+        }
     }
 
     // Handle the movement of a piece
@@ -87,21 +96,12 @@ ApplicationWindow {
 
     // Automatically call handleCapture whenever pieceToCapture changes
     onPieceToCaptureChanged: {
-        if (window.pieceToCapture !== ""){
-            var thePiece
-            console.log("Finding the piece position")
-            // Find the enemy piece to capture
-            for (var i = 0; i < piecesModel.count; i++) {
-                var enemyPiece = piecesModel.get(i);
-                if (enemyPiece.position === window.pieceToCapture) {
-                    thePiece = enemyPiece
-                    break
-                }
-            }
-            console.log("The piece to delete is in the position: " + thePiece.position)
+        if(window.pieceToCapture !== ""){
+            var thePiecePos = window.pieceToCapture
 
-            handleCapture(thePiece);
-            handlePieceMovement(window.selectedPiece, thePiece.position);
+            handleCapture();
+            // If a capture occurred, handle the movement
+            handlePieceMovement(window.selectedPiece, thePiecePos);
         }
     }
 
