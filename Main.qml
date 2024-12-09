@@ -92,6 +92,10 @@ ApplicationWindow {
 
             //Deselect the selected piece
             window.selectedPiece = ""
+
+            // Reset the highlights
+            window.highlightedMoves = []
+
             // Switch turn after the move
             window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
         }
@@ -181,12 +185,15 @@ ApplicationWindow {
                 Rectangle {
                     width: chessBoard.width / 8
                     height: chessBoard.height / 8
+                    color: (window.highlightedMoves.indexOf(index % 8 + "," + Math.floor(index / 8)) !== -1)
+                           ? Qt.rgba(153/255, 204/255, 255/255, 0.5) // #99CCFF with 50% transparency
+                           : "transparent"
+                    z: 1
                     x: (index % 8) * (chessBoard.width / 8)
                     y: Math.floor(index / 8) * (chessBoard.height / 8)
-                    color: (window.highlightedMoves.indexOf(index % 8 + "," + Math.floor(index / 8)) !== -1) ? "rgba(0, 255, 0, 0.5)" : "transparent"
-                    z: -1
                 }
             }
+
 
 
             // Define chess pieces using ChessPiece component

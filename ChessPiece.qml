@@ -48,13 +48,15 @@ Item {
         if (piece === "rook") {
             // Example: Add all horizontal and vertical moves
             for (var i = 0; i < 8; i++) {
-                moves.push(i + "," + row);
-                moves.push(col + "," + i);
+                // Store positions in "col,row" format
+                moves.push(i + "," + row);  // Horizontal moves (same row, all columns)
+                moves.push(col + "," + i);  // Vertical moves (same column, all rows)
             }
         }
         // Add logic for other pieces...
 
         return moves;
     }
+
 
 }
