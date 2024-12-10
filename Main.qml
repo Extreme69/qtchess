@@ -70,6 +70,13 @@ ApplicationWindow {
 
     // Handle the movement of a piece
     function handlePieceMovement(piece, targetPosition) {
+        // Ensure the target position is within highlighted moves
+        if (window.highlightedMoves.indexOf(targetPosition) === -1) {
+            console.log("Invalid move: " + targetPosition + " is not highlighted.");
+
+            return; // Exit the function if the move is invalid
+        }
+
         // Find the index of the selected piece in the model
         var selectedPieceIndex = -1;
         for (var i = 0; i < piecesModel.count; i++) {
@@ -170,9 +177,6 @@ ApplicationWindow {
                                     // Handle the piece movement to the target position
                                     handlePieceMovement(selectedPiece.position, targetPosition);
                                 }
-
-                                // Deselect the piece and switch turn
-                                window.selectedPiece = "";
                             }
                         }
                     }
