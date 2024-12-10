@@ -198,8 +198,6 @@ ApplicationWindow {
                 }
             }
 
-
-
             // Define chess pieces using ChessPiece component
             Repeater {
                 model: piecesModel

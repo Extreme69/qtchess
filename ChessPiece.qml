@@ -40,34 +40,52 @@ Item {
         }
     }
 
-    // Helper function to calculate horizontal moves
-    function horizontalMoves(row) {
-        var result = [];
-        for (var i = 0; i < 8; i++) {
-            result.push(i + "," + row);
+    function getPieceAtPosition(position) {
+        for (var i = 0; i < piecesModel.count; i++) {
+            if (piecesModel.get(i).position === position) {
+                return piecesModel.get(i);
+            }
         }
-        return result;
+        return null; // No piece at this position
     }
 
-    // Helper function to calculate vertical moves
-    function verticalMoves(col) {
-        var result = [];
-        for (var i = 0; i < 8; i++) {
-            result.push(col + "," + i);
-        }
-        return result;
+    function isPositionInBounds(col, row) {
+        return col >= 0 && col < 8 && row >= 0 && row < 8;
     }
 
-    // Helper function to calculate diagonal moves
-    function diagonalMoves(col, row) {
-        var result = [];
-        for (var i = 1; i < 8; i++) {
-            if (col + i < 8 && row + i < 8) result.push((col + i) + "," + (row + i));  // Bottom-right
-            if (col + i < 8 && row - i >= 0) result.push((col + i) + "," + (row - i));  // Top-right
-            if (col - i >= 0 && row + i < 8) result.push((col - i) + "," + (row + i));  // Bottom-left
-            if (col - i >= 0 && row - i >= 0) result.push((col - i) + "," + (row - i));  // Top-left
+    function addIfValidMove(moves, col, row) {
+        if (isPositionInBounds(col, row)) {
+            var position = col + "," + row;
+            var pieceAtPosition = getPieceAtPosition(position);
+            if (!pieceAtPosition || pieceAtPosition.color !== color) {
+                moves.push(position); // Add free square or capture enemy
+            }
         }
-        return result;
+    }
+
+    function tracePath(col, row, dCol, dRow, maxSteps) {
+        var moves = [];
+        for (var step = 1; step <= maxSteps; step++) {
+            var newCol = col + step * dCol;
+            var newRow = row + step * dRow;
+
+            if (!isPositionInBounds(newCol, newRow)) {
+                break; // Stop at the edge of the board
+            }
+
+            var position = newCol + "," + newRow;
+            var pieceAtPosition = getPieceAtPosition(position);
+
+            if (pieceAtPosition) {
+                if (pieceAtPosition.color !== color) {
+                    moves.push(position); // Capture enemy piece
+                }
+                break; // Stop tracing further, as the path is blocked
+            }
+
+            moves.push(position); // Add free square
+        }
+        return moves;
     }
 
     function calculateValidMoves(piece, position) {
@@ -77,73 +95,86 @@ Item {
 
         switch (piece) {
             case "rook":
-                // Add all horizontal and vertical moves
-                moves = moves.concat(horizontalMoves(row), verticalMoves(col));
+                moves = moves.concat(
+                    tracePath(col, row, 1, 0, 8),  // Right
+                    tracePath(col, row, -1, 0, 8), // Left
+                    tracePath(col, row, 0, 1, 8),  // Down
+                    tracePath(col, row, 0, -1, 8)  // Up
+                );
                 break;
 
             case "bishop":
-                // Add all diagonal moves
-                moves = moves.concat(diagonalMoves(col, row));
+                moves = moves.concat(
+                    tracePath(col, row, 1, 1, 8),   // Bottom-right
+                    tracePath(col, row, -1, -1, 8), // Top-left
+                    tracePath(col, row, 1, -1, 8),  // Top-right
+                    tracePath(col, row, -1, 1, 8)   // Bottom-left
+                );
                 break;
 
             case "queen":
-                // Queen combines rook and bishop moves
-                moves = moves.concat(horizontalMoves(row), verticalMoves(col), diagonalMoves(col, row));
-                break;
-
-            case "king":
-                // King moves one square in any direction
-                var directions = [
-                    [1, 0], [-1, 0], [0, 1], [0, -1], // Horizontal & Vertical
-                    [1, 1], [-1, -1], [1, -1], [-1, 1] // Diagonal
-                ];
-                directions.forEach(function(dir) {
-                    var newCol = col + dir[0];
-                    var newRow = row + dir[1];
-                    if (newCol >= 0 && newCol < 8 && newRow >= 0 && newRow < 8) {
-                        moves.push(newCol + "," + newRow);
-                    }
-                });
+                moves = moves.concat(
+                    tracePath(col, row, 1, 0, 8),   // Right
+                    tracePath(col, row, -1, 0, 8),  // Left
+                    tracePath(col, row, 0, 1, 8),   // Down
+                    tracePath(col, row, 0, -1, 8),  // Up
+                    tracePath(col, row, 1, 1, 8),   // Bottom-right
+                    tracePath(col, row, -1, -1, 8), // Top-left
+                    tracePath(col, row, 1, -1, 8),  // Top-right
+                    tracePath(col, row, -1, 1, 8)   // Bottom-left
+                );
                 break;
 
             case "knight":
-                // Knight moves in an "L" shape
                 var knightMoves = [
                     [2, 1], [2, -1], [-2, 1], [-2, -1],
                     [1, 2], [1, -2], [-1, 2], [-1, -2]
                 ];
                 knightMoves.forEach(function(move) {
-                    var newCol = col + move[0];
-                    var newRow = row + move[1];
-                    if (newCol >= 0 && newCol < 8 && newRow >= 0 && newRow < 8) {
-                        moves.push(newCol + "," + newRow);
-                    }
+                    addIfValidMove(moves, col + move[0], row + move[1]);
+                });
+                break;
+
+            case "king":
+                var directions = [
+                    [1, 0], [-1, 0], [0, 1], [0, -1],  // Horizontal & Vertical
+                    [1, 1], [-1, -1], [1, -1], [-1, 1] // Diagonal
+                ];
+                directions.forEach(function(dir) {
+                    addIfValidMove(moves, col + dir[0], row + dir[1]);
                 });
                 break;
 
             case "pawn":
-                // Pawn moves: one square forward, and optionally two if on starting row
-                var direction = (color === "white") ? -1 : 1;  // White moves up (-1), black moves down (+1)
-                if (row + direction >= 0 && row + direction < 8) {
-                    moves.push(col + "," + (row + direction));  // Forward move
-                }
-                // Starting row two-square move
-                if ((color === "white" && row === 6) || (color === "black" && row === 1)) {
-                    if (row + 2 * direction >= 0 && row + 2 * direction < 8) {
-                        moves.push(col + "," + (row + 2 * direction));
+                var direction = (color === "white") ? -1 : 1;
+                var forwardPos = col + "," + (row + direction);
+
+                // Forward move
+                if (!getPieceAtPosition(forwardPos)) {
+                    moves.push(forwardPos);
+                    // Starting row double move
+                    if ((color === "white" && row === 6) || (color === "black" && row === 1)) {
+                        var doubleForwardPos = col + "," + (row + 2 * direction);
+                        if (!getPieceAtPosition(doubleForwardPos) && !getPieceAtPosition(forwardPos)) {
+                            moves.push(doubleForwardPos);
+                        }
                     }
                 }
+
                 // Captures
-                if (col - 1 >= 0 && row + direction >= 0 && row + direction < 8) {
-                    moves.push((col - 1) + "," + (row + direction));  // Capture left
-                }
-                if (col + 1 < 8 && row + direction >= 0 && row + direction < 8) {
-                    moves.push((col + 1) + "," + (row + direction));  // Capture right
-                }
+                [-1, 1].forEach(function(offset) {
+                    var captureCol = col + offset;
+                    var captureRow = row + direction;
+                    if (isPositionInBounds(captureCol, captureRow)) {
+                        var capturePos = captureCol + "," + captureRow;
+                        var pieceAtCapture = getPieceAtPosition(capturePos);
+                        if (pieceAtCapture && pieceAtCapture.color !== color) {
+                            moves.push(capturePos); // Add valid capture position
+                        }
+                    }
+                });
                 break;
         }
-
         return moves;
     }
-
 }
