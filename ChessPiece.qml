@@ -9,7 +9,6 @@ Item {
     width: parent.width / 8
     height: parent.height / 8
 
-    // ChessPiece Component
     GameState {
         id: gameState // Instance of ChessPiece component
     }

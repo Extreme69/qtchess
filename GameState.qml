@@ -160,12 +160,17 @@ Item {
         return moves;
     }
 
-    // This functions checks for a check on a king
+    // This function checks for a check on a king
     function checkForCheck() {
-        var whiteKingPosition = piecesModel.get(0).position
-        var blackKingPosition = piecesModel.get(1).position
+        var whiteKing = piecesModel.get(0);
+        var blackKing = piecesModel.get(1);
 
-        var kingPosition = (window.currentPlayer === "white") ? whiteKingPosition : blackKingPosition;
+        // Reset isInCheck for both kings
+        whiteKing.isInCheck = false;
+        blackKing.isInCheck = false;
+
+        // Determine the current king and opponent's color
+        var currentKing = (window.currentPlayer === "white") ? whiteKing : blackKing;
         var opponentColor = (window.currentPlayer === "white") ? "black" : "white";
 
         // Loop through the opponent's pieces and check if they can attack the king's position
@@ -173,13 +178,15 @@ Item {
             var piece = piecesModel.get(i);
             if (piece.color === opponentColor) {
                 var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
-                if (validMoves.indexOf(kingPosition) !== -1) {
-                    console.log("The king is in check.")
-                    return true;  // King is in check
+                if (validMoves.indexOf(currentKing.position) !== -1) {
+                    console.log("The king is in check.");
+                    currentKing.isInCheck = true;
+                    return; // Exit early since the king is in check
                 }
             }
         }
-        console.log("The king is not in check.")
-        return false;  // King is not in check
+
+        console.log("The king is not in check.");
     }
+
 }

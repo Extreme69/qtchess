@@ -12,11 +12,15 @@ ApplicationWindow {
     property string pieceToCapture: "" // Track enemy piece to capture
     property var highlightedMoves: []
 
+    GameState {
+        id: gameState // Instance of ChessPiece component
+    }
+
     // Define pieces as a ListModel
     ListModel {
         id: piecesModel
-        ListElement { piece: "king"; color: "white"; position: "4,7"; hasMoved: false }
-        ListElement { piece: "king"; color: "black"; position: "4,0"; hasMoved: false }
+        ListElement { piece: "king"; color: "white"; position: "4,7"; hasMoved: false; isInCheck: false }
+        ListElement { piece: "king"; color: "black"; position: "4,0"; hasMoved: false; isInCheck: false }
         ListElement { piece: "rook"; color: "black"; position: "0,0"; hasMoved: false }
         ListElement { piece: "rook"; color: "black"; position: "7,0"; hasMoved: false }
         ListElement { piece: "rook"; color: "white"; position: "0,7"; hasMoved: false }
@@ -165,6 +169,9 @@ ApplicationWindow {
 
             // Switch turn after the move
             window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
+
+            // Check for checks after moving
+            gameState.checkForCheck()
         }
     }
 
@@ -268,6 +275,12 @@ ApplicationWindow {
                     hasMoved: model.hasMoved
                     x: (parseInt(model.position.split(',')[0])) * (chessBoard.width / 8)
                     y: (parseInt(model.position.split(',')[1])) * (chessBoard.height / 8)
+
+                    // Add logic to highlight the king if it's in check
+                    Rectangle {
+                        anchors.fill: parent
+                        color: model.isInCheck && model.piece === "king" ? Qt.rgba(255, 0, 0, 0.5) : "transparent"
+                    }
                 }
             }
 
