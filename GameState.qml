@@ -14,7 +14,7 @@ Item {
         return col >= 0 && col < 8 && row >= 0 && row < 8;
     }
 
-    function addIfValidMove(moves, col, row) {
+    function addIfValidMove(moves, col, row, color) {
         if (isPositionInBounds(col, row)) {
             var position = col + "," + row;
             var pieceAtPosition = getPieceAtPosition(position);
@@ -92,7 +92,7 @@ Item {
                     [1, 2], [1, -2], [-1, 2], [-1, -2]
                 ];
                 knightMoves.forEach(function(move) {
-                    addIfValidMove(moves, col + move[0], row + move[1]);
+                    addIfValidMove(moves, col + move[0], row + move[1], color);
                 });
                 break;
 
@@ -103,7 +103,7 @@ Item {
                     [1, 1], [-1, -1], [1, -1], [-1, 1]
                 ];
                 directions.forEach(function(dir) {
-                    addIfValidMove(moves, col + dir[0], row + dir[1]);
+                    addIfValidMove(moves, col + dir[0], row + dir[1], color);
                 });
 
                 // Castling for both sides if conditions are met
@@ -179,14 +179,76 @@ Item {
             if (piece.color === opponentColor) {
                 var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
                 if (validMoves.indexOf(currentKing.position) !== -1) {
-                    console.log("The king is in check.");
                     currentKing.isInCheck = true;
+                    checkForCheckmate(currentKing, opponentColor); // Check for checkmate after confirming the king is in check
                     return; // Exit early since the king is in check
                 }
             }
         }
-
-        console.log("The king is not in check.");
     }
 
+    function checkForCheckmate(king, opponentColor) {
+        console.log("Checking for checkmate...");
+
+        // 1. Check if the king can move to escape
+        var kingMoves = calculateValidMoves("king", king.position, king.hasMoved, king.color);
+        for (var move of kingMoves) {
+            if (!isSquareThreatened(move, opponentColor)) {
+                console.log("King can escape to:", move);
+                return false; // Not a checkmate if the king can escape
+            }
+        }
+
+        // 2. Check if any allied piece can block or capture the threatening piece
+        for (var i = 0; i < piecesModel.count; i++) {
+            var piece = piecesModel.get(i);
+            if (piece.color === king.color && piece.piece !== "king") {
+                var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
+                for (var move_ of validMoves) {
+                    if (canBlockOrCapture(move_, king, opponentColor)) {
+                        console.log("Allied piece can block or capture at:", move_);
+                        return false; // Not a checkmate if any piece can block or capture
+                    }
+                }
+            }
+        }
+
+        console.log("Checkmate! The king cannot escape.");
+        return true; // No escape possible, this is a checkmate
+    }
+
+    function isSquareThreatened(square, opponentColor) {
+        for (var i = 0; i < piecesModel.count; i++) {
+            var piece = piecesModel.get(i);
+            if (piece.color === opponentColor) {
+                var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
+                if (validMoves.indexOf(square) !== -1) {
+                    return true; // Square is threatened
+                }
+            }
+        }
+        return false;
+    }
+
+    function canBlockOrCapture(move, king, opponentColor) {
+        // Simulate moving to the square and check if the king is still in check
+        var originalPosition = piecesModel.get(king.index).position;
+        piecesModel.get(king.index).position = move;
+
+        var isStillInCheck = false;
+        for (var i = 0; i < piecesModel.count; i++) {
+            var piece = piecesModel.get(i);
+            if (piece.color === opponentColor) {
+                var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
+                if (validMoves.indexOf(king.position) !== -1) {
+                    isStillInCheck = true;
+                    break;
+                }
+            }
+        }
+
+        // Revert to the original position after simulation
+        piecesModel.get(king.index).position = originalPosition;
+        return !isStillInCheck;
+    }
 }
