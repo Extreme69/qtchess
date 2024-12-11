@@ -15,22 +15,22 @@ ApplicationWindow {
     // Define pieces as a ListModel
     ListModel {
         id: piecesModel
-        ListElement { piece: "rook"; color: "black"; position: "0,0" }
+        ListElement { piece: "king"; color: "white"; position: "4,7"; hasMoved: false }
+        ListElement { piece: "king"; color: "black"; position: "4,0"; hasMoved: false }
+        ListElement { piece: "rook"; color: "black"; position: "0,0"; hasMoved: false }
+        ListElement { piece: "rook"; color: "black"; position: "7,0"; hasMoved: false }
+        ListElement { piece: "rook"; color: "white"; position: "0,7"; hasMoved: false }
+        ListElement { piece: "rook"; color: "white"; position: "7,7"; hasMoved: false }
         ListElement { piece: "knight"; color: "black"; position: "1,0" }
         ListElement { piece: "bishop"; color: "black"; position: "2,0" }
         ListElement { piece: "queen"; color: "black"; position: "3,0" }
-        ListElement { piece: "king"; color: "black"; position: "4,0" }
         ListElement { piece: "bishop"; color: "black"; position: "5,0" }
         ListElement { piece: "knight"; color: "black"; position: "6,0" }
-        ListElement { piece: "rook"; color: "black"; position: "7,0" }
-        ListElement { piece: "rook"; color: "white"; position: "0,7" }
         ListElement { piece: "knight"; color: "white"; position: "1,7" }
         ListElement { piece: "bishop"; color: "white"; position: "2,7" }
         ListElement { piece: "queen"; color: "white"; position: "3,7" }
-        ListElement { piece: "king"; color: "white"; position: "4,7" }
         ListElement { piece: "bishop"; color: "white"; position: "5,7" }
         ListElement { piece: "knight"; color: "white"; position: "6,7" }
-        ListElement { piece: "rook"; color: "white"; position: "7,7" }
         ListElement { piece: "pawn"; color: "black"; position: "0,1" }
         ListElement { piece: "pawn"; color: "black"; position: "1,1" }
         ListElement { piece: "pawn"; color: "black"; position: "2,1" }
@@ -73,11 +73,9 @@ ApplicationWindow {
         // Ensure the target position is within highlighted moves
         if (window.highlightedMoves.indexOf(targetPosition) === -1) {
             console.log("Invalid move: " + targetPosition + " is not highlighted.");
-
-            return; // Exit the function if the move is invalid
+            return;
         }
 
-        // Find the index of the selected piece in the model
         var selectedPieceIndex = -1;
         for (var i = 0; i < piecesModel.count; i++) {
             if (piecesModel.get(i).position === piece) {
@@ -86,27 +84,67 @@ ApplicationWindow {
             }
         }
 
-        // If the piece is found in the model, update its position
         if (selectedPieceIndex !== -1) {
             var selectedPiece = piecesModel.get(selectedPieceIndex);
 
-            // Move the piece to the target position
-            piecesModel.set(selectedPieceIndex, {
-                piece: selectedPiece.piece,
-                color: selectedPiece.color,
-                position: targetPosition
-            });
+            // If the move is castling, move the rook and the king
+            if (selectedPiece.piece === "king" && (targetPosition === "6,7" || targetPosition === "2,7" || targetPosition === "6,0" || targetPosition === "2,0")) {
+                var rookPosition = (targetPosition === "6,7" || targetPosition === "6,0") ? "7,7" : "0,7";
+                var newRookPosition = (targetPosition === "6,7" || targetPosition === "6,0") ? "5,7" : "3,7";
 
-            //Deselect the selected piece
-            window.selectedPiece = ""
+                // Move the king
+                piecesModel.set(selectedPieceIndex, {
+                    piece: selectedPiece.piece,
+                    color: selectedPiece.color,
+                    position: targetPosition
+                });
 
-            // Reset the highlights
-            window.highlightedMoves = []
+                // Find and move the rook
+                for (var j = 0; j < piecesModel.count; j++) {
+                    var rook = piecesModel.get(j);
+                    if (rook.position === rookPosition && rook.piece === "rook" && rook.color === selectedPiece.color) {
+                        piecesModel.set(j, {
+                            piece: rook.piece,
+                            color: rook.color,
+                            position: newRookPosition,
+                            hasMoved: true
+                        });
+                        break;
+                    }
+                }
 
-            // Switch turn after the move
-            window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
+                // Mark the king as moved
+                piecesModel.set(selectedPieceIndex, {
+                    piece: selectedPiece.piece,
+                    color: selectedPiece.color,
+                    position: targetPosition,
+                    hasMoved: true
+                });
+
+                // Deselect the piece and reset highlights
+                window.selectedPiece = "";
+                window.highlightedMoves = [];
+
+                // Switch turn after the move
+                window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
+            } else {
+                // Standard move handling (already implemented)
+                piecesModel.set(selectedPieceIndex, {
+                    piece: selectedPiece.piece,
+                    color: selectedPiece.color,
+                    position: targetPosition
+                });
+
+                // Deselect the selected piece and reset highlights
+                window.selectedPiece = "";
+                window.highlightedMoves = [];
+
+                // Switch turn after the move
+                window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
+            }
         }
     }
+
 
     // Automatically call handleCapture whenever pieceToCapture changes
     onPieceToCaptureChanged: {

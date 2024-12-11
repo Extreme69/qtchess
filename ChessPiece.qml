@@ -136,13 +136,36 @@ Item {
                 break;
 
             case "king":
+                // Horizontal & Vertical moves (already handled)
                 var directions = [
-                    [1, 0], [-1, 0], [0, 1], [0, -1],  // Horizontal & Vertical
-                    [1, 1], [-1, -1], [1, -1], [-1, 1] // Diagonal
+                    [1, 0], [-1, 0], [0, 1], [0, -1],
+                    [1, 1], [-1, -1], [1, -1], [-1, 1]
                 ];
                 directions.forEach(function(dir) {
                     addIfValidMove(moves, col + dir[0], row + dir[1]);
                 });
+
+                // Castling for both sides if conditions are met
+                if (color === "white" && !piecesModel.get(9).hasMoved && !piecesModel.get(16).hasMoved) { // Check if rooks and king haven't moved
+                    // Kingside Castling (4,7 -> 6,7) and rook (7,7 -> 5,7)
+                    if (!getPieceAtPosition("5,7") && !getPieceAtPosition("6,7")) {
+                        moves.push("6,7");
+                    }
+                    // Queenside Castling (4,7 -> 2,7) and rook (0,7 -> 3,7)
+                    if (!getPieceAtPosition("3,7") && !getPieceAtPosition("2,7") && !getPieceAtPosition("1,7")) {
+                        moves.push("2,7");
+                    }
+                }
+                if (color === "black" && !piecesModel.get(0).hasMoved && !piecesModel.get(7).hasMoved) { // Same logic for black
+                    if (!getPieceAtPosition("5,0") && !getPieceAtPosition("6,0")) {
+                        console.log("We have valid castle for black.")
+                        moves.push("6,0");
+                    }
+                    if (!getPieceAtPosition("3,0") && !getPieceAtPosition("2,0") && !getPieceAtPosition("1,0")) {
+                        console.log("We have valid castle for black.")
+                        moves.push("2,0");
+                    }
+                }
                 break;
 
             case "pawn":
