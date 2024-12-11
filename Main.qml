@@ -159,14 +159,6 @@ ApplicationWindow {
                 });
             }
 
-            // Debug: Log the 'hasMoved' property for all kings and rooks
-            for (var k = 0; k < piecesModel.count; k++) {
-                var pieceToCheck = piecesModel.get(k);
-                if (pieceToCheck.piece === "king" || pieceToCheck.piece === "rook") {
-                    console.log(`Piece: ${pieceToCheck.piece}, Color: ${pieceToCheck.color}, HasMoved: ${pieceToCheck.hasMoved}`);
-                }
-            }
-
             // Deselect the piece and reset highlights
             window.selectedPiece = "";
             window.highlightedMoves = [];
