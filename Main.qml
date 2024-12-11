@@ -89,14 +89,26 @@ ApplicationWindow {
 
             // If the move is castling, move the rook and the king
             if (selectedPiece.piece === "king" && (targetPosition === "6,7" || targetPosition === "2,7" || targetPosition === "6,0" || targetPosition === "2,0")) {
-                var rookPosition = (targetPosition === "6,7" || targetPosition === "6,0") ? "7,7" : "0,7";
-                var newRookPosition = (targetPosition === "6,7" || targetPosition === "6,0") ? "5,7" : "3,7";
+
+                var rookPosition, newRookPosition;
+
+                if (selectedPiece.color === "white") {
+                    rookPosition = (targetPosition === "6,7") ? "7,7" : "0,7"; // White's rook positions for castling
+                    newRookPosition = (targetPosition === "6,7") ? "5,7" : "3,7";
+                } else if (selectedPiece.color === "black") {
+                    rookPosition = (targetPosition === "6,0") ? "7,0" : "0,0"; // Black's rook positions for castling
+                    newRookPosition = (targetPosition === "6,0") ? "5,0" : "3,0";
+                }
+
+                console.log("The old rook position is: " + rookPosition)
+                console.log("The new rook position is: " + newRookPosition)
 
                 // Move the king
                 piecesModel.set(selectedPieceIndex, {
                     piece: selectedPiece.piece,
                     color: selectedPiece.color,
-                    position: targetPosition
+                    position: targetPosition,
+                    hasMoved: true
                 });
 
                 // Find and move the rook
@@ -113,13 +125,7 @@ ApplicationWindow {
                     }
                 }
 
-                // Mark the king as moved
-                piecesModel.set(selectedPieceIndex, {
-                    piece: selectedPiece.piece,
-                    color: selectedPiece.color,
-                    position: targetPosition,
-                    hasMoved: true
-                });
+
 
                 // Deselect the piece and reset highlights
                 window.selectedPiece = "";
@@ -128,7 +134,7 @@ ApplicationWindow {
                 // Switch turn after the move
                 window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
             } else {
-                // Standard move handling (already implemented)
+                // Standard move handling
                 piecesModel.set(selectedPieceIndex, {
                     piece: selectedPiece.piece,
                     color: selectedPiece.color,
