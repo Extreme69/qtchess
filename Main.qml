@@ -52,19 +52,71 @@ ApplicationWindow {
     // This function will be triggered when the pieceToCapture changes
     function handleCapture() {
         if (window.pieceToCapture !== "") {
-            // Find the enemy piece to capture
-            for (var i = 0; i < piecesModel.count; i++) {
-                var enemyPiece = piecesModel.get(i);
-                if (enemyPiece.position === window.pieceToCapture && enemyPiece.color !== window.currentPlayer) {
-                    // Capture the piece
-                    console.log("Capturing enemy piece at " + window.pieceToCapture);
-                    // Remove the captured piece from the model
-                    piecesModel.remove(i);
-                    break;  // Exit after removing the piece
+            // Check if the target capture position is within the highlighted moves
+            if (window.highlightedMoves.indexOf(window.pieceToCapture) !== -1) {
+                // Find the enemy piece to capture
+                for (var i = 0; i < piecesModel.count; i++) {
+                    var enemyPiece = piecesModel.get(i);
+
+                    // Check if it's an enemy piece and the position matches
+                    if (enemyPiece.position === window.pieceToCapture && enemyPiece.color !== window.currentPlayer) {
+                        // Capture the piece
+                        console.log("Capturing enemy piece at " + window.pieceToCapture);
+
+                        // Remove the captured piece from the model
+                        piecesModel.remove(i);
+                        break;  // Exit after removing the piece
+                    }
                 }
+            } else {
+                // If the target position is not in the highlighted moves
+                console.log("Invalid capture: " + window.pieceToCapture + " is not a valid highlighted move.");
             }
-            // Reset the pieceToCapture after the capture
+
+            // Reset the pieceToCapture after the capture attempt
             window.pieceToCapture = "";
+        }
+    }
+
+    // Handle the castling logic
+    function handleCastling(king, targetPosition) {
+        var rookPosition, newRookPosition;
+
+        // Determine the rook's position and the new rook position based on the king's color and target position
+        if (king.color === "white") {
+            rookPosition = (targetPosition === "6,7") ? "7,7" : "0,7"; // White's rook positions for castling
+            newRookPosition = (targetPosition === "6,7") ? "5,7" : "3,7";
+        } else if (king.color === "black") {
+            rookPosition = (targetPosition === "6,0") ? "7,0" : "0,0"; // Black's rook positions for castling
+            newRookPosition = (targetPosition === "6,0") ? "5,0" : "3,0";
+        }
+
+        // Move the king
+        for (var i = 0; i < piecesModel.count; i++) {
+            var piece = piecesModel.get(i);
+            if (piece.position === king.position && piece.piece === "king" && piece.color === king.color) {
+                piecesModel.set(i, {
+                    piece: piece.piece,
+                    color: piece.color,
+                    position: targetPosition,
+                    hasMoved: true
+                });
+                break;
+            }
+        }
+
+        // Find and move the rook
+        for (var j = 0; j < piecesModel.count; j++) {
+            var rook = piecesModel.get(j);
+            if (rook.position === rookPosition && rook.piece === "rook" && rook.color === king.color) {
+                piecesModel.set(j, {
+                    piece: rook.piece,
+                    color: rook.color,
+                    position: newRookPosition,
+                    hasMoved: true
+                });
+                break;
+            }
         }
     }
 
@@ -87,49 +139,18 @@ ApplicationWindow {
         if (selectedPieceIndex !== -1) {
             var selectedPiece = piecesModel.get(selectedPieceIndex);
 
-            // If the move is castling, move the rook and the king
+            // If the move is castling, handle castling logic
             if (selectedPiece.piece === "king" && (targetPosition === "6,7" || targetPosition === "2,7" || targetPosition === "6,0" || targetPosition === "2,0")) {
-
-                var rookPosition, newRookPosition;
-
-                if (selectedPiece.color === "white") {
-                    rookPosition = (targetPosition === "6,7") ? "7,7" : "0,7"; // White's rook positions for castling
-                    newRookPosition = (targetPosition === "6,7") ? "5,7" : "3,7";
-                } else if (selectedPiece.color === "black") {
-                    rookPosition = (targetPosition === "6,0") ? "7,0" : "0,0"; // Black's rook positions for castling
-                    newRookPosition = (targetPosition === "6,0") ? "5,0" : "3,0";
-                }
-
-                // Move the king
-                piecesModel.set(selectedPieceIndex, {
-                    piece: selectedPiece.piece,
-                    color: selectedPiece.color,
-                    position: targetPosition,
-                    hasMoved: true
-                });
-
-                // Find and move the rook
-                for (var j = 0; j < piecesModel.count; j++) {
-                    var rook = piecesModel.get(j);
-                    if (rook.position === rookPosition && rook.piece === "rook" && rook.color === selectedPiece.color) {
-                        piecesModel.set(j, {
-                            piece: rook.piece,
-                            color: rook.color,
-                            position: newRookPosition,
-                            hasMoved: true
-                        });
-                        break;
-                    }
-                }
+                handleCastling(selectedPiece, targetPosition);
             } else if (selectedPiece.piece === "king" || selectedPiece.piece === "rook") {
-                // If the piece is a room or a king mark it as moved
+                // If the piece is a king or rook, mark it as moved
                 piecesModel.set(selectedPieceIndex, {
                     piece: selectedPiece.piece,
                     color: selectedPiece.color,
                     position: targetPosition,
                     hasMoved: true
                 });
-            }else {
+            } else {
                 // Standard move handling
                 piecesModel.set(selectedPieceIndex, {
                     piece: selectedPiece.piece,
@@ -137,6 +158,7 @@ ApplicationWindow {
                     position: targetPosition
                 });
             }
+
             // Debug: Log the 'hasMoved' property for all kings and rooks
             for (var k = 0; k < piecesModel.count; k++) {
                 var pieceToCheck = piecesModel.get(k);
@@ -153,7 +175,6 @@ ApplicationWindow {
             window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
         }
     }
-
 
     // Automatically call handleCapture whenever pieceToCapture changes
     onPieceToCaptureChanged: {
