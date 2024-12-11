@@ -21,32 +21,32 @@ ApplicationWindow {
         ListElement { piece: "rook"; color: "black"; position: "7,0"; hasMoved: false }
         ListElement { piece: "rook"; color: "white"; position: "0,7"; hasMoved: false }
         ListElement { piece: "rook"; color: "white"; position: "7,7"; hasMoved: false }
-        ListElement { piece: "knight"; color: "black"; position: "1,0" }
-        ListElement { piece: "bishop"; color: "black"; position: "2,0" }
-        ListElement { piece: "queen"; color: "black"; position: "3,0" }
-        ListElement { piece: "bishop"; color: "black"; position: "5,0" }
-        ListElement { piece: "knight"; color: "black"; position: "6,0" }
-        ListElement { piece: "knight"; color: "white"; position: "1,7" }
-        ListElement { piece: "bishop"; color: "white"; position: "2,7" }
-        ListElement { piece: "queen"; color: "white"; position: "3,7" }
-        ListElement { piece: "bishop"; color: "white"; position: "5,7" }
-        ListElement { piece: "knight"; color: "white"; position: "6,7" }
-        ListElement { piece: "pawn"; color: "black"; position: "0,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "1,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "2,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "3,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "4,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "5,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "6,1" }
-        ListElement { piece: "pawn"; color: "black"; position: "7,1" }
-        ListElement { piece: "pawn"; color: "white"; position: "0,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "1,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "2,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "3,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "4,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "5,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "6,6" }
-        ListElement { piece: "pawn"; color: "white"; position: "7,6" }
+        ListElement { piece: "knight"; color: "black"; position: "1,0"; hasMoved: false }
+        ListElement { piece: "bishop"; color: "black"; position: "2,0"; hasMoved: false }
+        ListElement { piece: "queen"; color: "black"; position: "3,0"; hasMoved: false }
+        ListElement { piece: "bishop"; color: "black"; position: "5,0"; hasMoved: false }
+        ListElement { piece: "knight"; color: "black"; position: "6,0"; hasMoved: false }
+        ListElement { piece: "knight"; color: "white"; position: "1,7"; hasMoved: false }
+        ListElement { piece: "bishop"; color: "white"; position: "2,7"; hasMoved: false }
+        ListElement { piece: "queen"; color: "white"; position: "3,7"; hasMoved: false }
+        ListElement { piece: "bishop"; color: "white"; position: "5,7"; hasMoved: false }
+        ListElement { piece: "knight"; color: "white"; position: "6,7"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "black"; position: "0,1"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "black"; position: "1,1"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "black"; position: "2,1"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "black"; position: "3,1"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "black"; position: "4,1"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "black"; position: "5,1"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "black"; position: "6,1"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "black"; position: "7,1"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "white"; position: "0,6"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "white"; position: "1,6"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "white"; position: "2,6"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "white"; position: "3,6"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "white"; position: "4,6"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "white"; position: "5,6"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "white"; position: "6,6"; hasMoved: false }
+        ListElement { piece: "pawn"; color: "white"; position: "7,6"; hasMoved: false }
     }
 
     // This function will be triggered when the pieceToCapture changes
@@ -100,9 +100,6 @@ ApplicationWindow {
                     newRookPosition = (targetPosition === "6,0") ? "5,0" : "3,0";
                 }
 
-                console.log("The old rook position is: " + rookPosition)
-                console.log("The new rook position is: " + newRookPosition)
-
                 // Move the king
                 piecesModel.set(selectedPieceIndex, {
                     piece: selectedPiece.piece,
@@ -124,30 +121,36 @@ ApplicationWindow {
                         break;
                     }
                 }
-
-
-
-                // Deselect the piece and reset highlights
-                window.selectedPiece = "";
-                window.highlightedMoves = [];
-
-                // Switch turn after the move
-                window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
-            } else {
+            } else if (selectedPiece.piece === "king" || selectedPiece.piece === "rook") {
+                // If the piece is a room or a king mark it as moved
+                piecesModel.set(selectedPieceIndex, {
+                    piece: selectedPiece.piece,
+                    color: selectedPiece.color,
+                    position: targetPosition,
+                    hasMoved: true
+                });
+            }else {
                 // Standard move handling
                 piecesModel.set(selectedPieceIndex, {
                     piece: selectedPiece.piece,
                     color: selectedPiece.color,
                     position: targetPosition
                 });
-
-                // Deselect the selected piece and reset highlights
-                window.selectedPiece = "";
-                window.highlightedMoves = [];
-
-                // Switch turn after the move
-                window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
             }
+            // Debug: Log the 'hasMoved' property for all kings and rooks
+            for (var k = 0; k < piecesModel.count; k++) {
+                var pieceToCheck = piecesModel.get(k);
+                if (pieceToCheck.piece === "king" || pieceToCheck.piece === "rook") {
+                    console.log(`Piece: ${pieceToCheck.piece}, Color: ${pieceToCheck.color}, HasMoved: ${pieceToCheck.hasMoved}`);
+                }
+            }
+
+            // Deselect the piece and reset highlights
+            window.selectedPiece = "";
+            window.highlightedMoves = [];
+
+            // Switch turn after the move
+            window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
         }
     }
 
@@ -249,6 +252,7 @@ ApplicationWindow {
                     piece: model.piece
                     color: model.color
                     position: model.position
+                    hasMoved: model.hasMoved
                     x: (parseInt(model.position.split(',')[0])) * (chessBoard.width / 8)
                     y: (parseInt(model.position.split(',')[1])) * (chessBoard.height / 8)
                 }

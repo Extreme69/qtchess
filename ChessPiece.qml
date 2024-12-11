@@ -4,6 +4,7 @@ Item {
     property string piece
     property string color
     property string position
+    property bool hasMoved
 
     width: parent.width / 8
     height: parent.height / 8
@@ -31,7 +32,7 @@ Item {
                 } else if (color === window.currentPlayer) {
                     // Select the piece if it's the current player's turn
                     window.selectedPiece = position;
-                    window.highlightedMoves = calculateValidMoves(piece, position);
+                    window.highlightedMoves = calculateValidMoves(piece, position, hasMoved);
                 } else if (window.selectedPiece !== "" && color !== window.currentPlayer) {
                     // Select a piece to capture
                     window.pieceToCapture = position;
@@ -88,7 +89,7 @@ Item {
         return moves;
     }
 
-    function calculateValidMoves(piece, position) {
+    function calculateValidMoves(piece, position, hasMoved) {
         var moves = [];
         var col = parseInt(position.split(",")[0]);
         var row = parseInt(position.split(",")[1]);
@@ -145,8 +146,10 @@ Item {
                     addIfValidMove(moves, col + dir[0], row + dir[1]);
                 });
 
+                console.log(`The king has moved: ${hasMoved}`)
+
                 // Castling for both sides if conditions are met
-                if (color === "white" && !piecesModel.get(4).hasMoved && !piecesModel.get(5).hasMoved) { // Check if rooks and king haven't moved
+                if (color === "white" && !piecesModel.get(4).hasMoved && !piecesModel.get(5).hasMoved && !hasMoved) { // Check if rooks and king haven't moved
                     // Kingside Castling (4,7 -> 6,7) and rook (7,7 -> 5,7)
                     if (!getPieceAtPosition("5,7") && !getPieceAtPosition("6,7")) {
                         moves.push("6,7");
@@ -156,13 +159,11 @@ Item {
                         moves.push("2,7");
                     }
                 }
-                if (color === "black" && !piecesModel.get(2).hasMoved && !piecesModel.get(3).hasMoved) { // Same logic for black
+                if (color === "black" && !piecesModel.get(2).hasMoved && !piecesModel.get(3).hasMoved && !hasMoved) { // Same logic for black
                     if (!getPieceAtPosition("5,0") && !getPieceAtPosition("6,0")) {
-                        console.log("We have valid castle for black.")
                         moves.push("6,0");
                     }
                     if (!getPieceAtPosition("3,0") && !getPieceAtPosition("2,0") && !getPieceAtPosition("1,0")) {
-                        console.log("We have valid castle for black.")
                         moves.push("2,0");
                     }
                 }
