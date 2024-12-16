@@ -40,7 +40,7 @@ Item {
                     if(piece === "king"){
                         checkKing = true;
                     }
-                    window.highlightedMoves = gameState.calculateValidMoves(parent.parent, checkKing, false, false);
+                    window.highlightedMoves = gameState.calculateValidMoves(parent.parent, checkKing, false, false, true);
                 } else if (window.selectedPiece !== "" && color !== window.currentPlayer) {
                     // Select a piece to capture
                     window.pieceToCapture = position;
