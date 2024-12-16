@@ -188,22 +188,35 @@ Item {
     }
 
     function checkForCheckmate(king, opponentColor) {
-        // 1. Check if the king can move to escape
+        console.log("Checking for checkmate...");
+
+        // 1. Check if the king can move to escape safely
         var kingMoves = calculateValidMoves("king", king.position, king.hasMoved, king.color);
         for (var move of kingMoves) {
-            if (!isSquareThreatened(move, opponentColor)) {
+            // Simulate king's move
+            var originalPosition = king.position;
+            king.position = move;
+
+            // Check if the move is safe
+            var isSafe = !isSquareThreatened(move, opponentColor);
+
+            // Revert the king's position
+            king.position = originalPosition;
+
+            if (isSafe) {
                 console.log("King can escape to:", move);
-                return false; // Not a checkmate if the king can escape
+                return false; // Not a checkmate if the king can escape safely
             }
         }
 
         // 2. Check if any allied piece can block or capture the threatening piece
-        for (var i = 0; i < piecesModel.count; i++) {
-            var piece = piecesModel.get(i);
+        for (var j = 0; j < piecesModel.count; j++) {
+            var piece = piecesModel.get(j);
             if (piece.color === king.color && piece.piece !== "king") {
                 var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
+
                 for (var move_ of validMoves) {
-                    if (canBlockOrCapture(move_, king, opponentColor)) {
+                    if (canBlockOrCapture(piece, move_, opponentColor)) {
                         console.log("Allied piece can block or capture at:", move_);
                         return false; // Not a checkmate if any piece can block or capture
                     }
@@ -215,76 +228,59 @@ Item {
         return true; // No escape possible, this is a checkmate
     }
 
-    function isSquareThreatened(square, opponentColor) {
+
+    function isSquareThreatened(square, opponentColor, excludePiece = null) {
+        // Check all opponent pieces
         for (var i = 0; i < piecesModel.count; i++) {
             var piece = piecesModel.get(i);
-            if (piece.color === opponentColor) {
-                var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
-                if (validMoves.indexOf(square) !== -1) {
-                    return true; // Square is threatened
-                }
+
+            // Exclude a piece if specified (used for simulations)
+            if (piece === excludePiece || piece.color !== opponentColor) continue;
+
+            // Get the valid moves for this piece
+            var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
+
+            // Check if the square is under attack
+            if (validMoves.includes(square)) {
+                return true;
             }
         }
-        return false;
+        return false; // No threats found
     }
 
-    function canBlockOrCapture(move, threateningPosition, opponentColor) {
+
+    function canBlockOrCapture(pieceToMove, move, opponentColor) {
         var whiteKing = piecesModel.get(0);
         var blackKing = piecesModel.get(1);
 
-        // Find the piece making this move
-        var pieceToMove = null;
+        // Save original position
+        var originalPosition = pieceToMove.position;
+        var capturedPiece = null;
+
+        // Check if a piece is at the destination square
         for (var i = 0; i < piecesModel.count; i++) {
             var piece = piecesModel.get(i);
-            if (piece.color === window.currentPlayer && calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color).includes(move)) {
-                pieceToMove = piece;
+            if (piece.position === move && piece.color !== pieceToMove.color) {
+                capturedPiece = piece;
                 break;
             }
         }
 
-        if (!pieceToMove) return false; // No valid piece found for this move
-
-        // Save the current positions
-        var originalPosition = pieceToMove.position;
-        var threateningPiece = null;
-
-        // Find the threatening piece (piece attacking the king)
-        for (var j = 0; j < piecesModel.count; j++) {
-            var opponentPiece = piecesModel.get(j);
-            if (opponentPiece.color === opponentColor) {
-                var validMoves = calculateValidMoves(opponentPiece.piece, opponentPiece.position, opponentPiece.hasMoved, opponentPiece.color);
-                if (validMoves.includes(pieceToMove.color === "white" ? whiteKing.position : blackKing.position)) {
-                    threateningPiece = opponentPiece;
-                    break;
-                }
-            }
-        }
-
-        if (!threateningPiece) return false; // No threatening piece found
-
         // Simulate the move
         pieceToMove.position = move;
+        if (capturedPiece) capturedPiece.position = null; // Temporarily "remove" captured piece
 
-        // Check if the move captures the threatening piece
-        var doesCaptureThreat = (move === threateningPiece.position);
+        // Check if the king is still in check
+        var isKingStillInCheck = isSquareThreatened(
+            pieceToMove.color === "white" ? whiteKing.position : blackKing.position,
+            opponentColor
+        );
 
-        // Verify if the king is still in check after the move
-        var isKingStillInCheck = false;
-        for (var k = 0; k < piecesModel.count; k++) {
-            var opponentPiece_ = piecesModel.get(k);
-            if (opponentPiece_.color === opponentColor) {
-                var validMoves_ = calculateValidMoves(opponentPiece_.piece, opponentPiece_.position, opponentPiece_.hasMoved, opponentPiece_.color);
-                if (validMoves_.includes(pieceToMove.color === "white" ? whiteKing.position : blackKing.position)) {
-                    isKingStillInCheck = true;
-                    break;
-                }
-            }
-        }
-
-        // Revert the simulated move
+        // Revert the move
         pieceToMove.position = originalPosition;
+        if (capturedPiece) capturedPiece.position = move;
 
-        // Return true if the move captures the threat or blocks the check
-        return doesCaptureThreat || !isKingStillInCheck;
+        // Return true if the move resolves the check
+        return !isKingStillInCheck;
     }
 }
