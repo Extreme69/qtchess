@@ -22,6 +22,7 @@ Item {
                 moves.push(position); // Add free square or capture enemy
             }
         }
+        return moves
     }
 
     function tracePath(col, row, dCol, dRow, maxSteps, color) {
@@ -335,6 +336,8 @@ Item {
                         moves = possibleMoves.filter(function(move) {
                             return !isMoveRevealingCheck(piece.position, move, opponentKing.color);
                         });
+                    } else {
+                        moves = possibleMoves
                     }
 
                 } else {
