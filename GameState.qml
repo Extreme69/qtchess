@@ -240,14 +240,16 @@ Item {
                     var direction = (color === "white") ? -1 : 1;
                     var forwardPos = col + "," + (row + direction);
 
-                    // Forward move
-                    if (!getPieceAtPosition(forwardPos)) {
-                        moves.push(forwardPos);
-                        // Starting row double move
-                        if ((color === "white" && row === 6) || (color === "black" && row === 1)) {
-                            var doubleForwardPos = col + "," + (row + 2 * direction);
-                            if (!getPieceAtPosition(doubleForwardPos) && !getPieceAtPosition(forwardPos)) {
-                                moves.push(doubleForwardPos);
+                    if(checkPawnCaptures === false){
+                        // Forward move
+                        if (!getPieceAtPosition(forwardPos)) {
+                            moves.push(forwardPos);
+                            // Starting row double move
+                            if ((color === "white" && row === 6) || (color === "black" && row === 1)) {
+                                var doubleForwardPos = col + "," + (row + 2 * direction);
+                                if (!getPieceAtPosition(doubleForwardPos) && !getPieceAtPosition(forwardPos)) {
+                                    moves.push(doubleForwardPos);
+                                }
                             }
                         }
                     }
