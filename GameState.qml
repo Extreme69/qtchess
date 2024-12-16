@@ -236,6 +236,7 @@ Item {
                 if (validMoves.indexOf(currentKing.position) !== -1) {
                     currentKing.isInCheck = true;
                     checkForCheckmate(currentKing, opponentColor); // Check for checkmate after confirming the king is in check
+                    currentKing.hasMoved = true; // Change the hasMoved property so that the king cannot castle
                     return; // Exit early since the king is in check
                 }
             }
@@ -308,7 +309,6 @@ Item {
         }
         return false; // No threats found
     }
-
 
     function canBlockOrCapture(pieceToMove, move, opponentColor) {
         var whiteKing = piecesModel.get(0);
