@@ -49,7 +49,7 @@ Item {
         return moves;
     }
 
-    function calculateValidMoves(piece, position, hasMoved, color) {
+    function calculateValidMoves(piece, position, hasMoved, color, checkKing) {
         var moves = [];
         var col = parseInt(position.split(",")[0]);
         var row = parseInt(position.split(",")[1]);
@@ -97,35 +97,62 @@ Item {
                 break;
 
             case "king":
-                // Horizontal & Vertical moves (already handled)
+                if(checkKing === false){
+                    break;
+                }
                 var directions = [
                     [1, 0], [-1, 0], [0, 1], [0, -1],
                     [1, 1], [-1, -1], [1, -1], [-1, 1]
                 ];
+
                 directions.forEach(function(dir) {
-                    addIfValidMove(moves, col + dir[0], row + dir[1], color);
+                    var newCol = col + dir[0];
+                    var newRow = row + dir[1];
+                    if (isPositionInBounds(newCol, newRow)) {
+                        var newPosition = newCol + "," + newRow;
+
+                        // Check if the new position is under threat
+                        if (!isSquareThreatened(newPosition, color === "white" ? "black" : "white")) {
+                            var pieceAtPosition = getPieceAtPosition(newPosition);
+                            // Only add valid moves (empty squares or capturing the opponent’s piece)
+                            if (!pieceAtPosition || pieceAtPosition.color !== color) {
+                                moves.push(newPosition);
+                            }
+                        }
+                    }
                 });
 
-                // Castling for both sides if conditions are met
-                if (color === "white" && !piecesModel.get(4).hasMoved && !piecesModel.get(5).hasMoved && !hasMoved) { // Check if rooks and king haven't moved
-                    // Kingside Castling (4,7 -> 6,7) and rook (7,7 -> 5,7)
-                    if (!getPieceAtPosition("5,7") && !getPieceAtPosition("6,7")) {
-                        moves.push("6,7");
+                // Castling logic (remains unchanged)
+                if (!hasMoved) {
+                    if (color === "white" && !piecesModel.get(4).hasMoved && !piecesModel.get(5).hasMoved) {
+                        // Kingside Castling (4,7 -> 6,7) and rook (7,7 -> 5,7)
+                        if (!getPieceAtPosition("5,7") && !getPieceAtPosition("6,7") &&
+                            !isSquareThreatened("4,7", "black") &&
+                            !isSquareThreatened("5,7", "black") &&
+                            !isSquareThreatened("6,7", "black")) {
+                            moves.push("6,7");
+                        }
+                        // Queenside Castling (4,7 -> 2,7) and rook (0,7 -> 3,7)
+                        if (!getPieceAtPosition("3,7") && !getPieceAtPosition("2,7") && !getPieceAtPosition("1,7") &&
+                            !isSquareThreatened("2,7", "black") && !isSquareThreatened("3,7", "black") && !isSquareThreatened("4,7", "black")) {
+                            moves.push("2,7");
+                        }
                     }
-                    // Queenside Castling (4,7 -> 2,7) and rook (0,7 -> 3,7)
-                    if (!getPieceAtPosition("3,7") && !getPieceAtPosition("2,7") && !getPieceAtPosition("1,7")) {
-                        moves.push("2,7");
-                    }
-                }
-                if (color === "black" && !piecesModel.get(2).hasMoved && !piecesModel.get(3).hasMoved && !hasMoved) { // Same logic for black
-                    if (!getPieceAtPosition("5,0") && !getPieceAtPosition("6,0")) {
-                        moves.push("6,0");
-                    }
-                    if (!getPieceAtPosition("3,0") && !getPieceAtPosition("2,0") && !getPieceAtPosition("1,0")) {
-                        moves.push("2,0");
+                    if (color === "black" && !piecesModel.get(2).hasMoved && !piecesModel.get(3).hasMoved) {
+                        if (!getPieceAtPosition("5,0") && !getPieceAtPosition("6,0") &&
+                            !isSquareThreatened("4,0", "white") &&
+                            !isSquareThreatened("5,0", "white") &&
+                            !isSquareThreatened("6,0", "white")) {
+                            moves.push("6,0");
+                        }
+                        if (!getPieceAtPosition("3,0") && !getPieceAtPosition("2,0") && !getPieceAtPosition("1,0") &&
+                            !isSquareThreatened("2,0", "white") && !isSquareThreatened("3,0", "white") && !isSquareThreatened("4,0", "white")) {
+                            moves.push("2,0");
+                        }
                     }
                 }
                 break;
+
 
             case "pawn":
                 var direction = (color === "white") ? -1 : 1;
@@ -177,7 +204,9 @@ Item {
         for (var i = 0; i < piecesModel.count; i++) {
             var piece = piecesModel.get(i);
             if (piece.color === opponentColor) {
-                var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
+                // Skip the king itself in this check
+                if (piece.piece === "king") continue;
+                var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color, false);
                 if (validMoves.indexOf(currentKing.position) !== -1) {
                     currentKing.isInCheck = true;
                     checkForCheckmate(currentKing, opponentColor); // Check for checkmate after confirming the king is in check
@@ -191,7 +220,7 @@ Item {
         console.log("Checking for checkmate...");
 
         // 1. Check if the king can move to escape safely
-        var kingMoves = calculateValidMoves("king", king.position, king.hasMoved, king.color);
+        var kingMoves = calculateValidMoves("king", king.position, king.hasMoved, king.color, true);
         for (var move of kingMoves) {
             // Simulate king's move
             var originalPosition = king.position;
@@ -213,8 +242,7 @@ Item {
         for (var j = 0; j < piecesModel.count; j++) {
             var piece = piecesModel.get(j);
             if (piece.color === king.color && piece.piece !== "king") {
-                var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
-
+                var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color, false);
                 for (var move_ of validMoves) {
                     if (canBlockOrCapture(piece, move_, opponentColor)) {
                         console.log("Allied piece can block or capture at:", move_);
@@ -238,7 +266,7 @@ Item {
             if (piece === excludePiece || piece.color !== opponentColor) continue;
 
             // Get the valid moves for this piece
-            var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color);
+            var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color, false);
 
             // Check if the square is under attack
             if (validMoves.includes(square)) {
