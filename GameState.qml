@@ -1,56 +1,121 @@
 import QtQuick 2.15
 
 Item {
+	/**
+	 * Retrieves the chess piece located at a specified position.
+	 *
+	 * @param {string} position - The board position to check.
+	 * @returns {Object|null} - The chess piece object at the given position,
+	 *                          or null if no piece is found.
+	 */
     function getPieceAtPosition(position) {
         for (var i = 0; i < piecesModel.count; i++) {
             if (piecesModel.get(i).position === position) {
                 return piecesModel.get(i);
             }
         }
-        return null; // No piece at this position
+        return null;
     }
-
+	
+	/**
+	 * Determines whether a given position is within the bounds of the chessboard.
+	 *
+	 * @param {number} col - The column index of the position (0 to 7).
+	 * @param {number} row - The row index of the position (0 to 7).
+	 * @returns {boolean} - True if the position is within the bounds of the chessboard,
+	 *                      false otherwise.
+	 */
     function isPositionInBounds(col, row) {
         return col >= 0 && col < 8 && row >= 0 && row < 8;
     }
-
+	
+	/**
+	 * Adds a position to the list of valid moves if it is within bounds and does not contain
+	 * a piece of the same color.
+	 *
+	 * This function checks if the specified position is valid for movement based on board 
+	 * boundaries and the presence of an allied piece. If the square is either empty or occupied 
+	 * by an opponent's piece, it is added to the list of moves.
+	 *
+	 * @param {Array} moves - The array of valid moves to which the position may be added.
+	 * @param {number} col - The column of the target position (0 to 7).
+	 * @param {number} row - The row of the target position (0 to 7).
+	 * @param {string} color - The color of the moving piece ("white" or "black").
+	 * @returns {Array} - The updated array of valid moves.
+	 */
     function addIfValidMove(moves, col, row, color) {
+		// Check if the position is within board boundaries
         if (isPositionInBounds(col, row)) {
             var position = col + "," + row;
-            var pieceAtPosition = getPieceAtPosition(position);
+            var pieceAtPosition = getPieceAtPosition(position); // Check for a piece at the target position
+			
+			// Add the position if it is empty or occupied by an opponent's piece
             if (!pieceAtPosition || pieceAtPosition.color !== color) {
-                moves.push(position); // Add free square or capture enemy
+                moves.push(position); // Add valid move to the array
             }
         }
-        return moves
+        return moves; // Return the updated moves array
     }
-
+	
+	/**
+	 * Traces the path along a given direction on the chessboard, adding valid positions 
+	 * to the list of possible moves. This function handles movement for sliding pieces 
+	 * such as rooks, bishops, and queens.
+	 *
+	 * It continues moving in the specified direction until it reaches the edge of the board 
+	 * or encounters a piece. If an opponent's piece is encountered, it is added as a 
+	 * capture move. The function stops tracing the path after the first encounter with 
+	 * any piece, whether it is an enemy or an ally.
+	 *
+	 * @param {number} col - The current column of the piece (0 to 7).
+	 * @param {number} row - The current row of the piece (0 to 7).
+	 * @param {number} dCol - The direction of movement in the column (1 for right, -1 for left).
+	 * @param {number} dRow - The direction of movement in the row (1 for down, -1 for up).
+	 * @param {number} maxSteps - The maximum number of steps the piece can move in this direction.
+	 * @param {string} color - The color of the piece (either "white" or "black").
+	 * @returns {Array} - An array of valid positions that the piece can move to along the traced path.
+	 */
     function tracePath(col, row, dCol, dRow, maxSteps, color) {
         var moves = [];
+		
+		// Loop through the steps in the given direction (up to maxSteps)
         for (var step = 1; step <= maxSteps; step++) {
+			// Calculate new column position and row
             var newCol = col + step * dCol;
             var newRow = row + step * dRow;
-
+			
+			// Break if the new position is out of bounds
             if (!isPositionInBounds(newCol, newRow)) {
                 break; // Stop at the edge of the board
             }
 
             var position = newCol + "," + newRow;
-            var pieceAtPosition = getPieceAtPosition(position);
+            var pieceAtPosition = getPieceAtPosition(position); // Get the piece at the new position
 
             if (pieceAtPosition) {
+				// Capture the enemy piece and stop tracing the path
                 if (pieceAtPosition.color !== color) {
-                    moves.push(position); // Capture enemy piece
+                    moves.push(position); // Add enemy piece as a capture move
                 }
-                break; // Stop tracing further, as the path is blocked
+                break; // Stop further movement if the path is blocked by a piece
             }
-
-            moves.push(position); // Add free square
+			
+			// Add the free square to the list of valid moves
+            moves.push(position);
         }
-        return moves;
+        return moves; // Return the list of valid moves along the traced path
     }
-
-    // Function to check if a position is adjacent to the opponent's king
+	
+	/**
+	 * Checks if a given position is adjacent to the opponent's king position.
+	 *
+	 * @param {number} col - The column index of the position to check.
+	 * @param {number} row - The row index of the position to check.
+	 * @param {string} opponentKingPosition - The position of the opponent's king, 
+	 *                                        formatted as "col,row" (e.g., "4,4").
+	 * @returns {boolean} - True if the position is adjacent to the opponent's king, 
+	 *                      false otherwise.
+	 */
     function isAdjacent(col, row, opponentKingPosition) {
         var opponentKingCol = parseInt(opponentKingPosition.split(",")[0]);
         var opponentKingRow = parseInt(opponentKingPosition.split(",")[1]);
@@ -61,55 +126,86 @@ Item {
         // Kings cannot move next to each other, so the difference should not be 1 in both x and y axes
         return dx <= 1 && dy <= 1;
     }
-
-    // Helper function to get moves that can block or capture the checking piece
+	
+	
+    /**
+	 * Retrieves a list of valid moves for the current player's pieces that can block 
+	 * or capture the opponent's piece responsible for checking the king.
+	 *
+	 * This function evaluates all potential moves for allied pieces and filters out 
+	 * those that cannot resolve the check on the king. It uses the `canBlockOrCapture` 
+	 * function to determine which moves are effective.
+	 *
+	 * @param {string} position - The position of the king under check or the square 
+	 *                             threatened by the checking piece.
+	 * @returns {Array} - An array of moves that can block or capture the threatening piece.
+	 */
     function getMovesThatCanBlockOrCapture(position) {
         var moves = [];
         var opponentColor = (window.currentPlayer === "white") ? "black" : "white";
-
+		
+		// Locate the piece at the specified position
         for (var i = 0; i < piecesModel.count; i++) {
             var piece = piecesModel.get(i);
 
             if(piece.position === position){
-                break;
+                break; // Found the piece at the given position
             }
         }
-
+		
+		//Calculate the pieces valid moves
         var validMoves = calculateValidMoves(piece, false, false, true, true);
 
-        if(piece.piece === "pawn"){
-            console.log(validMoves)
-        }
-
-        // Only consider moves that are in the line of attack of the checking piece
+        // Evaluate moves to check if they can block or capture the checking piece
         for (var move of validMoves) {
             if (canBlockOrCapture(piece, move, opponentColor)) {
-                moves.push(move);
+                moves.push(move); // Add the move to the list if it resolves the check
             }
         }
-
-        console.log(moves)
-        return moves;
+		
+        return moves; // Return the list of resolving moves
     }
-
+	
+	/**
+	 * Determines if a move by a piece would reveal a check on the player's own king.
+	 *
+	 * This function evaluates whether a move leaves the king vulnerable to an attack 
+	 * by an opponent's piece by simulating the move and checking the resulting state.
+	 *
+	 * @param {string} position - The current position of the piece attempting the move.
+	 * @param {string} move - The target square for the piece's move.
+	 * @param {string} opponentColor - The color of the opponent's pieces.
+	 * @returns {boolean} - True if the move reveals a check on the king, false otherwise.
+	 */
     function isMoveRevealingCheck(position, move, oponentColor){
-
-        console.log(position)
-        console.log(move)
-        console.log(oponentColor)
-
+		// Locate the piece at the specified position
         for (var i = 0; i < piecesModel.count; i++) {
             var piece = piecesModel.get(i);
 
             if(piece.position === position){
-                break;
+                break; // Found the piece at the given position
             }
         }
-
+		
+		// Return true if the move reveals a check, determined by `canBlockOrCapture`
+		console.log("IAM PUTTING THIS HERE SO I CAN CHECK THE COMMENTS I MADE ON THIS FUNCTION, IS THE FUNCTION RETURNING TRUE OR FALSE IF WE REVEAL A CHECK???");
         return !canBlockOrCapture(piece, move, oponentColor)
-
     }
-
+	
+	/**
+	 * Calculates all the valid moves for a given piece based on its type, position, 
+	 * and the state of the game (e.g., whether the king is in check). The function 
+	 * handles different movement rules for each piece type (rook, bishop, queen, knight, 
+	 * king, pawn) and filters out invalid moves such as those that would expose the king 
+	 * to check. It also accounts for special moves like castling.
+	 * 
+	 * @param {Object} piece - The piece object representing the piece whose moves we are calculating.
+	 * @param {boolean} checkKing - Flag indicating whether to check for king moves.
+	 * @param {boolean} checkPawnCaptures - Flag indicating whether to consider pawn captures when calculating moves (even without posible pawn captures).
+	 * @param {boolean} smth - Additional parameter used to allow certain conditions in specific situations.
+	 * @param {boolean} checkValidMoves - Flag to filter out moves that would expose the king to check.
+	 * @returns {Array} - An array of valid moves for the piece.
+	 */
     function calculateValidMoves(piece, checkKing, checkPawnCaptures = false, smth, checkValidMoves = false) {
         var moves = [];
         var possibleMoves = [];
@@ -129,17 +225,20 @@ Item {
         var currentKing = (window.currentPlayer === "white") ? whiteKing : blackKing;
 
         var isInCheck = currentKing.isInCheck;
-
+		
+		// Switch based on piece type to calculate valid moves
         switch (pieceType) {
             case "rook":
                     if (!isInCheck || smth) {
+						// Rook moves in straight lines (left, right, up, down)
                         possibleMoves = moves.concat(
                             tracePath(col, row, 1, 0, 8, color),  // Right
                             tracePath(col, row, -1, 0, 8, color), // Left
                             tracePath(col, row, 0, 1, 8, color),  // Down
                             tracePath(col, row, 0, -1, 8, color)  // Up
                         );
-
+						
+						// If filtering valid moves, remove moves that expose the king to check
                         if(checkValidMoves){
                             // Filter out moves that expose the king to check
                             moves = possibleMoves.filter(function(move) {
@@ -150,20 +249,22 @@ Item {
                         }
 
                     } else {
-                        // Restrict rook moves to only those that block the check or capture the threatening piece
+                        // Restrict rook moves to block the check or capture the attacking piece
                         moves = getMovesThatCanBlockOrCapture(piece.position);
                     }
                     break;
 
             case "bishop":
                 if (!isInCheck || smth) {
+					// Bishop moves diagonally (four diagonal directions)
                     possibleMoves = moves.concat(
                         tracePath(col, row, 1, 1, 8, color),   // Bottom-right
                         tracePath(col, row, -1, -1, 8, color), // Top-left
                         tracePath(col, row, 1, -1, 8, color),  // Top-right
                         tracePath(col, row, -1, 1, 8, color)   // Bottom-left
                     );
-
+					
+					// If filtering valid moves, remove moves that expose the king to check
                     if(checkValidMoves){
                         // Filter out moves that expose the king to check
                         moves = possibleMoves.filter(function(move) {
@@ -174,13 +275,14 @@ Item {
                     }
 
                 } else {
-                    // Restrict bishop moves to only those that block the check or capture the threatening piece
+                    // Restrict bishop moves to block the check or capture the attacking piece
                     moves = getMovesThatCanBlockOrCapture(piece.position);
                 }
                 break;
 
             case "queen":
                 if (!isInCheck || smth) {
+					// Queen combines rook and bishop movements
                     possibleMoves = moves.concat(
                         tracePath(col, row, 1, 0, 8, color),   // Right
                         tracePath(col, row, -1, 0, 8, color),  // Left
@@ -191,9 +293,9 @@ Item {
                         tracePath(col, row, 1, -1, 8, color),  // Top-right
                         tracePath(col, row, -1, 1, 8, color)   // Bottom-left
                     );
-
+					
+					// If filtering valid moves, remove moves that expose the king to check
                     if(checkValidMoves){
-                        // Filter out moves that expose the king to check
                         moves = possibleMoves.filter(function(move) {
                             return !isMoveRevealingCheck(piece.position, move, opponentKing.color);
                         });
@@ -202,13 +304,14 @@ Item {
                     }
 
                 } else {
-                    // Restrict queen moves to only those that block the check or capture the threatening piece
+                    // Restrict queen moves to block the check or capture the attacking piece
                     moves = getMovesThatCanBlockOrCapture(piece.position);
                 }
                 break;
 
             case "knight":
                 if (!isInCheck || smth){
+					// Knight has special "L-shaped" moves
                     var knightMoves = [
                         [2, 1], [2, -1], [-2, 1], [-2, -1],
                         [1, 2], [1, -2], [-1, 2], [-1, -2]
@@ -216,9 +319,9 @@ Item {
                     knightMoves.forEach(function(move) {
                         addIfValidMove(possibleMoves, col + move[0], row + move[1], color);
                     });
-
+					
+					// If filtering valid moves, remove moves that expose the king to check
                     if(checkValidMoves){
-                        // Filter out moves that expose the king to check
                         moves = possibleMoves.filter(function(move) {
                             return !isMoveRevealingCheck(piece.position, move, opponentKing.color);
                         });
@@ -227,7 +330,7 @@ Item {
                     }
 
                 } else {
-                    // Restrict knigh moves to only those that block the check or capture the threatening piece
+                    // Restrict knight moves to block the check or capture the attacking piece
                     moves = getMovesThatCanBlockOrCapture(piece.position);
                 }
                 break;
@@ -236,34 +339,39 @@ Item {
                 if(checkKing === false){
                     break;
                 }
-
+				
+				// King's movement is one square in any direction
                 var directions = [
                     [1, 0], [-1, 0], [0, 1], [0, -1],
                     [1, 1], [-1, -1], [1, -1], [-1, 1]
                 ];
-
+				
+				// Loop through all possible movement directions for the king
                 directions.forEach(function(dir) {
                     var newCol = col + dir[0];
                     var newRow = row + dir[1];
+					
                     if (isPositionInBounds(newCol, newRow)) {
                         var newPosition = newCol + "," + newRow;
 
-                        // Check if the new position is under threat
+                        // Ensure the new position is not under threat by the opponent
                         if (!isSquareThreatened(newPosition, color === "white" ? "black" : "white")) {
                             var pieceAtPosition = getPieceAtPosition(newPosition);
+							
                             // Only add valid moves (empty squares or capturing the opponent’s piece)
                             if (!pieceAtPosition || pieceAtPosition.color !== color) {
-                                // Check if the new position is adjacent to the opponent's king
+							
+                                // Ensure the king isn't adjacent to the opponent's king (as it would be in check)
                                 var isAdjacentToOpponentKing = isAdjacent(newCol, newRow, opponentKing.position);
                                 if (!isAdjacentToOpponentKing) {
-                                    moves.push(newPosition);
+                                    moves.push(newPosition); // Add valid king move
                                 }
                             }
                         }
                     }
                 });
 
-                // Castling logic (remains unchanged)
+                // Castling logic for the king, only if the king has not moved
                 if (!hasMoved) {
                     if (color === "white" && !piecesModel.get(4).hasMoved && !piecesModel.get(5).hasMoved) {
                         // Kingside Castling (4,7 -> 6,7) and rook (7,7 -> 5,7)
@@ -280,6 +388,7 @@ Item {
                         }
                     }
                     if (color === "black" && !piecesModel.get(2).hasMoved && !piecesModel.get(3).hasMoved) {
+						// Black side castling checks similar to white side
                         if (!getPieceAtPosition("5,0") && !getPieceAtPosition("6,0") &&
                             !isSquareThreatened("4,0", "white") &&
                             !isSquareThreatened("5,0", "white") &&
@@ -297,16 +406,17 @@ Item {
 
             case "pawn":
                 if (!isInCheck || smth) {
-                    var direction = (color === "white") ? -1 : 1;
-                    var forwardPos = col + "," + (row + direction);
+                    var direction = (color === "white") ? -1 : 1; // Set direction of pawn's movement based on color
+                    var forwardPos = col + "," + (row + direction); // Move forward by one square
 
                     if(checkPawnCaptures === false){
-                        // Forward move
+                        // Pawn forward move: Check if the forward square is empty
                         if (!getPieceAtPosition(forwardPos)) {
                             possibleMoves.push(forwardPos);
-                            // Starting row double move
+                            // Check for starting row where pawn can move two squares
                             if ((color === "white" && row === 6) || (color === "black" && row === 1)) {
                                 var doubleForwardPos = col + "," + (row + 2 * direction);
+								// Ensure no pieces block the double move
                                 if (!getPieceAtPosition(doubleForwardPos) && !getPieceAtPosition(forwardPos)) {
                                     possibleMoves.push(doubleForwardPos);
                                 }
@@ -314,7 +424,7 @@ Item {
                         }
                     }
 
-                    // Captures
+                    // Capturing: Pawn can capture diagonally one square
                     [-1, 1].forEach(function(offset) {
                         var captureCol = col + offset;
                         var captureRow = row + direction;
@@ -325,14 +435,15 @@ Item {
                             }
 
                             var pieceAtCapture = getPieceAtPosition(capturePos);
+							// Only add capture if there's an enemy piece at the capture square
                             if (pieceAtCapture && pieceAtCapture.color !== color) {
                                 possibleMoves.push(capturePos); // Add valid capture position
                             }
                         }
                     });
-
+					
+					// If filtering valid moves, remove moves that expose the king to check
                     if(checkValidMoves){
-                        // Filter out moves that expose the king to check
                         moves = possibleMoves.filter(function(move) {
                             return !isMoveRevealingCheck(piece.position, move, opponentKing.color);
                         });
@@ -341,17 +452,24 @@ Item {
                     }
 
                 } else {
-                    // Restrict pawn moves to only those that block the check or capture the threatening piece
+					// Restrict pawn moves to block the check or capture the attacking piece
                     moves = getMovesThatCanBlockOrCapture(piece.position);
                 }
                 break;
         }
 
-        return moves;
+        return moves; // Return the list of valid moves
     }
 
-    // This function checks for a check on a king
+    /**
+	 * Checks if the current player's king is in check and updates its status.
+	 *
+	 * This function evaluates whether the current player's king is under attack
+	 * by any of the opponent's pieces. If the king is in check, it also triggers
+	 * a checkmate evaluation and adjusts relevant properties to prevent castling.
+	 */
     function checkForCheck() {
+		// Retrieve references to both kings from the pieces model
         var whiteKing = piecesModel.get(0);
         var blackKing = piecesModel.get(1);
 
@@ -367,69 +485,93 @@ Item {
         for (var i = 0; i < piecesModel.count; i++) {
             var piece = piecesModel.get(i);
             if (piece.color === opponentColor) {
-                // Skip the king itself in this check
+                // Skip evaluating the opponent's king (kings can't directly attack)
                 if (piece.piece === "king") continue;
+				
                 var validMoves = calculateValidMoves(piece, false);
                 if (validMoves.indexOf(currentKing.position) !== -1) {
                     currentKing.isInCheck = true;
                     checkForCheckmate(currentKing, opponentColor); // Check for checkmate after confirming the king is in check
-                    currentKing.hasMoved = true; // Change the hasMoved property so that the king cannot castle
+                    currentKing.hasMoved = true; // Update the kings hasMoved property to disable castling if in check
                     return; // Exit early since the king is in check
                 }
             }
         }
     }
-
+	
+	/**
+	 * Determines if the king is in checkmate by evaluating potential moves for escape
+	 * and possible defensive actions by allied pieces.
+	 *
+	 * @param {Object} king - The king piece object currently in check.
+	 * @param {string} opponentColor - The color of the opponent's pieces.
+	 * @returns {boolean} - True if the king is in checkmate, false otherwise.
+	 */
     function checkForCheckmate(king, opponentColor) {
         console.log("Checking for checkmate...");
 
-        // 1. Check if the king can move to escape safely
+        // 1. Check if the king has any valid moves to escape the check
         var kingMoves = calculateValidMoves(king, true, false, true);
         for (var move of kingMoves) {
-            // Simulate king's move
+            // Simulate the king moving to the target square
             var originalPosition = king.position;
             king.position = move;
 
-            // Check if the move is safe
+            // Check if the square is safe for the king
             var isSafe = !isSquareThreatened(move, opponentColor);
 
-            // Revert the king's position
+            // Revert the king's position to its original location
             king.position = originalPosition;
 
             if (isSafe) {
                 console.log("King can escape to:", move);
-                return false; // Not a checkmate if the king can escape safely
+                return false; // If the king can move to a safe square, it's not checkmate
             }
         }
 
-        // 2. Check if any allied piece can block or capture the threatening piece
+        // 2. Check if an allied piece can block or capture the threatening piece
         for (var j = 0; j < piecesModel.count; j++) {
             var piece = piecesModel.get(j);
             if (piece.color === king.color && piece.piece !== "king") {
+				// Get valid moves for the allied piece
                 var validMoves = calculateValidMoves(piece, false, false, true);
+				
+				// Check if the piece can block or capture the threatening piece
                 for (var move_ of validMoves) {
                     if (canBlockOrCapture(piece, move_, opponentColor)) {
                         console.log("Allied piece can block or capture at:", move_);
-                        return false; // Not a checkmate if any piece can block or capture
+                        return false; // If any piece can defend, it's not checkmate
                     }
                 }
             }
         }
-
+		
+		// If no escape or defense is possible, the king is in checkmate
         console.log("Checkmate! The king cannot escape.");
-        return true; // No escape possible, this is a checkmate
+        return true;
     }
 
-
+	/**
+	 * Determines if a specific square is threatened by any of the opponent's pieces.
+	 *
+	 * This function evaluates whether the given square is under attack by any 
+	 * opponent piece, considering special rules for pawns and allowing the exclusion 
+	 * of a specific piece (useful for simulations).
+	 *
+	 * @param {string} square - The target square to evaluate.
+	 * @param {string} opponentColor - The color of the opponent's pieces.
+	 * @param {Object|null} excludePiece - (Optional) A piece to exclude from the check,
+	 *                                      typically used during simulations.
+	 * @returns {boolean} - True if the square is threatened, false otherwise.
+	 */
     function isSquareThreatened(square, opponentColor, excludePiece = null) {
-        // Check all opponent pieces
+        // Iterate through all pieces in the model
         for (var i = 0; i < piecesModel.count; i++) {
             var piece = piecesModel.get(i);
 
-            // Exclude a piece if specified (used for simulations)
+            // Skip excluded piece and pieces that don't belong to the opponent
             if (piece === excludePiece || piece.color !== opponentColor) continue;
 
-            // Calculate the valid moves for this piece
             var validMoves = [];
 
             // If it's a pawn, check for pawn captures
@@ -439,49 +581,62 @@ Item {
                 validMoves = calculateValidMoves(piece, false, false, true);  // Regular piece moves
             }
 
-            // Check if the square is under attack
+            // Check if the square is under attack by this piece
             if (validMoves.includes(square)) {
-                return true;
+                return true; // Square is threatened
             }
         }
 
-        return false;  // No threats found
+        return false;  // No threats detected
     }
 
-
+	/**
+	 * Determines whether a given piece can block a check or capture a threatening piece
+	 * to resolve a check on its king.
+	 *
+	 * This function simulates the piece's move to evaluate its impact on the check status 
+	 * of the king. It temporarily updates the board state, checks the threat status, and 
+	 * then reverts all changes.
+	 *
+	 * @param {Object} pieceToMove - The piece attempting to block or capture.
+	 * @param {string} move - The target square for the piece to move to.
+	 * @param {string} opponentColor - The color of the opponent's pieces.
+	 * @returns {boolean} - True if the move resolves the check, false otherwise.
+	 */
     function canBlockOrCapture(pieceToMove, move, opponentColor) {
         var whiteKing = piecesModel.get(0);
         var blackKing = piecesModel.get(1);
 
-        // Save original position
+        // Save the original positions
         var originalPosition = pieceToMove.position;
         var capturedPiece = null;
 
-        // Check if a piece is at the destination square
+        // Check if there is an opponent's piece at the destination square
         for (var i = 0; i < piecesModel.count; i++) {
             var piece = piecesModel.get(i);
             if (piece.position === move && piece.color !== pieceToMove.color) {
-                capturedPiece = piece;
+                capturedPiece = piece; // Record the piece being captured
                 break;
             }
         }
 
-        // Simulate the move
+        // Simulate the move by updating the piece's position
         pieceToMove.position = move;
-
+		
+		// Temporarily remove the captured piece from the board if applicable
         if (capturedPiece) capturedPiece.position = null; // Temporarily "remove" captured piece
 
-        // Check if the king is still in check
+        // Determine if the king is still in check after the simulated move
         var isKingStillInCheck = isSquareThreatened(
             pieceToMove.color === "white" ? whiteKing.position : blackKing.position,
             opponentColor
         );
 
-        // Revert the move
+        // Revert the simulated move
         pieceToMove.position = originalPosition;
         if (capturedPiece) capturedPiece.position = move;
 
-        // If the king is not in check after the move, it means the move resolves the check
+        // Return true if the king is no longer in check, indicating the move resolves the check
         return !isKingStillInCheck;
     }
 }
