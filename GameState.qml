@@ -49,6 +49,18 @@ Item {
         return moves;
     }
 
+    // Function to check if a position is adjacent to the opponent's king
+    function isAdjacent(col, row, opponentKingPosition) {
+        var opponentKingCol = parseInt(opponentKingPosition.split(",")[0]);
+        var opponentKingRow = parseInt(opponentKingPosition.split(",")[1]);
+
+        var dx = Math.abs(opponentKingCol - col);
+        var dy = Math.abs(opponentKingRow - row);
+
+        // Kings cannot move next to each other, so the difference should not be 1 in both x and y axes
+        return dx <= 1 && dy <= 1;
+    }
+
     function calculateValidMoves(piece, position, hasMoved, color, checkKing) {
         var moves = [];
         var col = parseInt(position.split(",")[0]);
@@ -100,6 +112,12 @@ Item {
                 if(checkKing === false){
                     break;
                 }
+
+                var whiteKing = piecesModel.get(0);
+                var blackKing = piecesModel.get(1);
+
+                var opponentKing = (window.currentPlayer === "white") ? blackKing : whiteKing;
+
                 var directions = [
                     [1, 0], [-1, 0], [0, 1], [0, -1],
                     [1, 1], [-1, -1], [1, -1], [-1, 1]
@@ -116,7 +134,11 @@ Item {
                             var pieceAtPosition = getPieceAtPosition(newPosition);
                             // Only add valid moves (empty squares or capturing the opponent’s piece)
                             if (!pieceAtPosition || pieceAtPosition.color !== color) {
-                                moves.push(newPosition);
+                                // Check if the new position is adjacent to the opponent's king
+                                var isAdjacentToOpponentKing = isAdjacent(newCol, newRow, opponentKing.position);
+                                if (!isAdjacentToOpponentKing) {
+                                    moves.push(newPosition);
+                                }
                             }
                         }
                     }
