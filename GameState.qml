@@ -61,62 +61,121 @@ Item {
         return dx <= 1 && dy <= 1;
     }
 
-    function calculateValidMoves(piece, position, hasMoved, color, checkKing, checkPawnCaptures = false) {
+    // Helper function to get moves that can block or capture the checking piece
+    function getMovesThatCanBlockOrCapture(position) {
         var moves = [];
+        var opponentColor = (window.currentPlayer === "white") ? "black" : "white";
+
+        // Check if a piece is at the destination square
+        for (var i = 0; i < piecesModel.count; i++) {
+            var piece = piecesModel.get(i);
+
+            if(piece.position === position){
+                break;
+            }
+        }
+
+        console.log(piece.piece)
+        console.log(piece.color)
+        console.log(piece.position)
+
+        var validMoves = calculateValidMoves(piece, false, false, true);
+        // Only consider moves that are in the line of attack of the checking piece
+        for (var move of validMoves) {
+            if (canBlockOrCapture(piece, move, opponentColor)) {
+                moves.push(move);
+            }
+        }
+
+        console.log(moves)
+        return moves;
+    }
+
+    function calculateValidMoves(piece, checkKing, checkPawnCaptures = false, smth) {
+        var moves = [];
+
+        var pieceType = piece.piece;
+        var position = piece.position;
+        var hasMoved = piece.hasMoved;
+        var color = piece.color;
+
         var col = parseInt(position.split(",")[0]);
         var row = parseInt(position.split(",")[1]);
 
-        switch (piece) {
+        var whiteKing = piecesModel.get(0);
+        var blackKing = piecesModel.get(1);
+
+        var opponentKing = (window.currentPlayer === "white") ? blackKing : whiteKing;
+        var currentKing = (window.currentPlayer === "white") ? whiteKing : blackKing;
+
+        var isInCheck = currentKing.isInCheck;
+
+        switch (pieceType) {
             case "rook":
-                moves = moves.concat(
-                    tracePath(col, row, 1, 0, 8, color),  // Right
-                    tracePath(col, row, -1, 0, 8, color), // Left
-                    tracePath(col, row, 0, 1, 8, color),  // Down
-                    tracePath(col, row, 0, -1, 8, color)  // Up
-                );
-                break;
+                    if (!isInCheck || smth) {
+                        moves = moves.concat(
+                            tracePath(col, row, 1, 0, 8, color),  // Right
+                            tracePath(col, row, -1, 0, 8, color), // Left
+                            tracePath(col, row, 0, 1, 8, color),  // Down
+                            tracePath(col, row, 0, -1, 8, color)  // Up
+                        );
+                    } else {
+                        // Restrict rook moves to only those that block the check or capture the threatening piece
+                        moves = getMovesThatCanBlockOrCapture(piece.position);
+                    }
+                    break;
 
             case "bishop":
-                moves = moves.concat(
-                    tracePath(col, row, 1, 1, 8, color),   // Bottom-right
-                    tracePath(col, row, -1, -1, 8, color), // Top-left
-                    tracePath(col, row, 1, -1, 8, color),  // Top-right
-                    tracePath(col, row, -1, 1, 8, color)   // Bottom-left
-                );
+                if (!isInCheck || smth) {
+                    moves = moves.concat(
+                        tracePath(col, row, 1, 1, 8, color),   // Bottom-right
+                        tracePath(col, row, -1, -1, 8, color), // Top-left
+                        tracePath(col, row, 1, -1, 8, color),  // Top-right
+                        tracePath(col, row, -1, 1, 8, color)   // Bottom-left
+                    );
+                } else {
+                    // Restrict bishop moves to only those that block the check or capture the threatening piece
+                    moves = getMovesThatCanBlockOrCapture(piece.position);
+                }
                 break;
 
             case "queen":
-                moves = moves.concat(
-                    tracePath(col, row, 1, 0, 8, color),   // Right
-                    tracePath(col, row, -1, 0, 8, color),  // Left
-                    tracePath(col, row, 0, 1, 8, color),   // Down
-                    tracePath(col, row, 0, -1, 8, color),  // Up
-                    tracePath(col, row, 1, 1, 8, color),   // Bottom-right
-                    tracePath(col, row, -1, -1, 8, color), // Top-left
-                    tracePath(col, row, 1, -1, 8, color),  // Top-right
-                    tracePath(col, row, -1, 1, 8, color)   // Bottom-left
-                );
+                if (!isInCheck || smth) {
+                    moves = moves.concat(
+                        tracePath(col, row, 1, 0, 8, color),   // Right
+                        tracePath(col, row, -1, 0, 8, color),  // Left
+                        tracePath(col, row, 0, 1, 8, color),   // Down
+                        tracePath(col, row, 0, -1, 8, color),  // Up
+                        tracePath(col, row, 1, 1, 8, color),   // Bottom-right
+                        tracePath(col, row, -1, -1, 8, color), // Top-left
+                        tracePath(col, row, 1, -1, 8, color),  // Top-right
+                        tracePath(col, row, -1, 1, 8, color)   // Bottom-left
+                    );
+                } else {
+                    // Restrict queen moves to only those that block the check or capture the threatening piece
+                    moves = getMovesThatCanBlockOrCapture(piece.position);
+                }
                 break;
 
             case "knight":
+                if (!isInCheck || smth){
                 var knightMoves = [
                     [2, 1], [2, -1], [-2, 1], [-2, -1],
                     [1, 2], [1, -2], [-1, 2], [-1, -2]
                 ];
                 knightMoves.forEach(function(move) {
                     addIfValidMove(moves, col + move[0], row + move[1], color);
-                });
+                });    
+                } else {
+                    // Restrict knigh moves to only those that block the check or capture the threatening piece
+                    moves = getMovesThatCanBlockOrCapture(piece.position);
+                }
                 break;
 
             case "king":
                 if(checkKing === false){
                     break;
                 }
-
-                var whiteKing = piecesModel.get(0);
-                var blackKing = piecesModel.get(1);
-
-                var opponentKing = (window.currentPlayer === "white") ? blackKing : whiteKing;
 
                 var directions = [
                     [1, 0], [-1, 0], [0, 1], [0, -1],
@@ -177,37 +236,42 @@ Item {
 
 
             case "pawn":
-                var direction = (color === "white") ? -1 : 1;
-                var forwardPos = col + "," + (row + direction);
+                if (!isInCheck || smth) {
+                    var direction = (color === "white") ? -1 : 1;
+                    var forwardPos = col + "," + (row + direction);
 
-                // Forward move
-                if (!getPieceAtPosition(forwardPos)) {
-                    moves.push(forwardPos);
-                    // Starting row double move
-                    if ((color === "white" && row === 6) || (color === "black" && row === 1)) {
-                        var doubleForwardPos = col + "," + (row + 2 * direction);
-                        if (!getPieceAtPosition(doubleForwardPos) && !getPieceAtPosition(forwardPos)) {
-                            moves.push(doubleForwardPos);
+                    // Forward move
+                    if (!getPieceAtPosition(forwardPos)) {
+                        moves.push(forwardPos);
+                        // Starting row double move
+                        if ((color === "white" && row === 6) || (color === "black" && row === 1)) {
+                            var doubleForwardPos = col + "," + (row + 2 * direction);
+                            if (!getPieceAtPosition(doubleForwardPos) && !getPieceAtPosition(forwardPos)) {
+                                moves.push(doubleForwardPos);
+                            }
                         }
                     }
+
+                    // Captures
+                    [-1, 1].forEach(function(offset) {
+                        var captureCol = col + offset;
+                        var captureRow = row + direction;
+                        if (isPositionInBounds(captureCol, captureRow)) {
+                            var capturePos = captureCol + "," + captureRow;
+                            if(checkPawnCaptures === true){
+                                moves.push(capturePos); // Add a capture position (only for simulating)
+                            }
+
+                            var pieceAtCapture = getPieceAtPosition(capturePos);
+                            if (pieceAtCapture && pieceAtCapture.color !== color) {
+                                moves.push(capturePos); // Add valid capture position
+                            }
+                        }
+                    });
+                } else {
+                    // Restrict pawn moves to only those that block the check or capture the threatening piece
+                    moves = getMovesThatCanBlockOrCapture(piece.position);
                 }
-
-                // Captures
-                [-1, 1].forEach(function(offset) {
-                    var captureCol = col + offset;
-                    var captureRow = row + direction;
-                    if (isPositionInBounds(captureCol, captureRow)) {
-                        var capturePos = captureCol + "," + captureRow;
-                        if(checkPawnCaptures === true){
-                            moves.push(capturePos); // Add a capture position (only for simulating)
-                        }
-
-                        var pieceAtCapture = getPieceAtPosition(capturePos);
-                        if (pieceAtCapture && pieceAtCapture.color !== color) {
-                            moves.push(capturePos); // Add valid capture position
-                        }
-                    }
-                });
                 break;
         }
         return moves;
@@ -232,7 +296,7 @@ Item {
             if (piece.color === opponentColor) {
                 // Skip the king itself in this check
                 if (piece.piece === "king") continue;
-                var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color, false);
+                var validMoves = calculateValidMoves(piece, false);
                 if (validMoves.indexOf(currentKing.position) !== -1) {
                     currentKing.isInCheck = true;
                     checkForCheckmate(currentKing, opponentColor); // Check for checkmate after confirming the king is in check
@@ -247,7 +311,7 @@ Item {
         console.log("Checking for checkmate...");
 
         // 1. Check if the king can move to escape safely
-        var kingMoves = calculateValidMoves("king", king.position, king.hasMoved, king.color, true);
+        var kingMoves = calculateValidMoves(king, true, false, true);
         for (var move of kingMoves) {
             // Simulate king's move
             var originalPosition = king.position;
@@ -269,7 +333,7 @@ Item {
         for (var j = 0; j < piecesModel.count; j++) {
             var piece = piecesModel.get(j);
             if (piece.color === king.color && piece.piece !== "king") {
-                var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color, false);
+                var validMoves = calculateValidMoves(piece, false, false, true);
                 for (var move_ of validMoves) {
                     if (canBlockOrCapture(piece, move_, opponentColor)) {
                         console.log("Allied piece can block or capture at:", move_);
@@ -292,14 +356,14 @@ Item {
             // Exclude a piece if specified (used for simulations)
             if (piece === excludePiece || piece.color !== opponentColor) continue;
 
-            var validMoves = []
+            // Calculate the valid moves for this piece
+            var validMoves = [];
 
-            // If it is the pawn check for pawn captures
-            if (piece.piece === "pawn"){
-                validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color, false, true);
-            }else{
-                // Get the valid moves for other pieces
-                validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color, false);
+            // If it's a pawn, check for pawn captures
+            if (piece.piece === "pawn") {
+                validMoves = calculateValidMoves(piece, false, true, true);  // Pawn captures
+            } else {
+                validMoves = calculateValidMoves(piece, false, false, true);  // Regular piece moves
             }
 
             // Check if the square is under attack
@@ -307,8 +371,10 @@ Item {
                 return true;
             }
         }
-        return false; // No threats found
+
+        return false;  // No threats found
     }
+
 
     function canBlockOrCapture(pieceToMove, move, opponentColor) {
         var whiteKing = piecesModel.get(0);
@@ -329,6 +395,7 @@ Item {
 
         // Simulate the move
         pieceToMove.position = move;
+
         if (capturedPiece) capturedPiece.position = null; // Temporarily "remove" captured piece
 
         // Check if the king is still in check
@@ -341,7 +408,7 @@ Item {
         pieceToMove.position = originalPosition;
         if (capturedPiece) capturedPiece.position = move;
 
-        // Return true if the move resolves the check
+        // If the king is not in check after the move, it means the move resolves the check
         return !isKingStillInCheck;
     }
 }

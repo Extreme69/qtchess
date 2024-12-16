@@ -36,7 +36,11 @@ Item {
                 } else if (color === window.currentPlayer) {
                     // Select the piece if it's the current player's turn
                     window.selectedPiece = position;
-                    window.highlightedMoves = gameState.calculateValidMoves(piece, position, hasMoved, color);
+                    var checkKing = false;
+                    if(piece === "king"){
+                        checkKing = true;
+                    }
+                    window.highlightedMoves = gameState.calculateValidMoves(parent.parent, checkKing, false, false);
                 } else if (window.selectedPiece !== "" && color !== window.currentPlayer) {
                     // Select a piece to capture
                     window.pieceToCapture = position;
