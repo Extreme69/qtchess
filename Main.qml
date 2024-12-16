@@ -6,17 +6,19 @@ ApplicationWindow {
     visible: true
     title: qsTr("Chess Game")
     visibility: Window.Maximized
-
-    property string currentPlayer: "white"
-    property string selectedPiece: "" // Track selected piece
-    property string pieceToCapture: "" // Track enemy piece to capture
-    property var highlightedMoves: []
-
+	
+	// Properties to track the game state and player actions
+    property string currentPlayer: "white"		// Set the starting player to white
+    property string selectedPiece: "" 			// Track the selected piece
+    property string pieceToCapture: ""			// Track the enemy piece to capture
+    property var highlightedMoves: []			// Array to store highlighted valid moves
+	
+	// Instance of the GameState component to handle the game rules and logic
     GameState {
-        id: gameState // Instance of ChessPiece component
+        id: gameState
     }
 
-    // Define pieces as a ListModel
+    // Define chess pieces using a ListModel to store all pieces and their positions
     ListModel {
         id: piecesModel
         ListElement { piece: "king"; color: "white"; position: "4,7"; hasMoved: false; isInCheck: false }
@@ -52,50 +54,65 @@ ApplicationWindow {
         ListElement { piece: "pawn"; color: "white"; position: "6,6"; hasMoved: false }
         ListElement { piece: "pawn"; color: "white"; position: "7,6"; hasMoved: false }
     }
-
-    // This function will be triggered when the pieceToCapture changes
+	
+	/**
+	 * Handles the capture of an enemy piece when a valid capture is made.
+	 *
+	 * This function verifies whether the capture target is a valid move,
+	 * identifies the enemy piece to be captured, and removes it from the board.
+	 */
     function handleCapture() {
+		// Check if there is a valid piece-to-capture target
         if (window.pieceToCapture !== "") {
-            // Check if the target capture position is within the highlighted moves
+		
+            // Validate if the capture position is one of the highlighted valid moves
             if (window.highlightedMoves.indexOf(window.pieceToCapture) !== -1) {
-                // Find the enemy piece to capture
                 for (var i = 0; i < piecesModel.count; i++) {
                     var enemyPiece = piecesModel.get(i);
 
-                    // Check if it's an enemy piece and the position matches
+                    // Ensure the piece is an enemy and matches the target position
                     if (enemyPiece.position === window.pieceToCapture && enemyPiece.color !== window.currentPlayer) {
-                        // Capture the piece
-                        console.log("Capturing enemy piece at " + window.pieceToCapture);
-
-                        // Remove the captured piece from the model
+					
+                        // Remove the captured enemy piece from the board model
                         piecesModel.remove(i);
-                        break;  // Exit after removing the piece
+                        break;  // Exit the loop after the piece is captured
                     }
                 }
             } else {
-                // If the target position is not in the highlighted moves
+                // Log an error if the target position is not a valid highlighted move
                 console.log("Invalid capture: " + window.pieceToCapture + " is not a valid highlighted move.");
             }
 
-            // Reset the pieceToCapture after the capture attempt
+            // Reset the pieceToCapture property after the capture attempt
             window.pieceToCapture = "";
         }
     }
 
-    // Handle the castling logic
+    /**
+	 * Handles the castling logic for a king and its associated rook.
+	 * 
+	 * This function moves the king and the corresponding rook to their new positions 
+	 * when a castling move is made. The specific logic differs based on the color 
+	 * of the king and the target position of the castling move.
+	 *
+	 * @param {Object} king - The king piece object that is being moved.
+	 * @param {string} targetPosition - The target position for the king to move to.
+	 */
     function handleCastling(king, targetPosition) {
         var rookPosition, newRookPosition;
 
-        // Determine the rook's position and the new rook position based on the king's color and target position
+        // Determine the initial rook position and the new position based on the king's color and castling direction
         if (king.color === "white") {
+			// White's rook positions for castling (kingside and queenside)
             rookPosition = (targetPosition === "6,7") ? "7,7" : "0,7"; // White's rook positions for castling
             newRookPosition = (targetPosition === "6,7") ? "5,7" : "3,7";
         } else if (king.color === "black") {
+			// Black's rook positions for castling (kingside and queenside)
             rookPosition = (targetPosition === "6,0") ? "7,0" : "0,0"; // Black's rook positions for castling
             newRookPosition = (targetPosition === "6,0") ? "5,0" : "3,0";
         }
 
-        // Move the king
+        // Move the king to the target position and mark it as having moved
         for (var i = 0; i < piecesModel.count; i++) {
             var piece = piecesModel.get(i);
             if (piece.position === king.position && piece.piece === "king" && piece.color === king.color) {
@@ -105,11 +122,11 @@ ApplicationWindow {
                     position: targetPosition,
                     hasMoved: true
                 });
-                break;
+                break; // Exit after moving the king
             }
         }
 
-        // Find and move the rook
+        // Find and move the rook to its new position after the castling move
         for (var j = 0; j < piecesModel.count; j++) {
             var rook = piecesModel.get(j);
             if (rook.position === rookPosition && rook.piece === "rook" && rook.color === king.color) {
@@ -119,19 +136,29 @@ ApplicationWindow {
                     position: newRookPosition,
                     hasMoved: true
                 });
-                break;
+                break; // Exit after moving the rook
             }
         }
     }
 
-    // Handle the movement of a piece
+    /**
+	 * Handles the movement of a selected piece to a target position.
+	 *
+	 * This function ensures the target position is valid, processes the move, 
+	 * and updates the board state accordingly. It also handles special moves 
+	 * like castling and switches the turn after the move.
+	 *
+	 * @param {string} piece - The position of the piece to be moved.
+	 * @param {string} targetPosition - The position to move the piece to.
+	 */
     function handlePieceMovement(piece, targetPosition) {
-        // Ensure the target position is within highlighted moves
+        // Ensure the target position is valid by checking if it is part of the highlighted moves
         if (window.highlightedMoves.indexOf(targetPosition) === -1) {
             console.log("Invalid move: " + targetPosition + " is not highlighted.");
             return;
         }
-
+		
+		// Find the index of the selected piece in the pieces model
         var selectedPieceIndex = -1;
         for (var i = 0; i < piecesModel.count; i++) {
             if (piecesModel.get(i).position === piece) {
@@ -139,11 +166,12 @@ ApplicationWindow {
                 break;
             }
         }
-
+		
+		// If the selected piece is found, proceed with the move
         if (selectedPieceIndex !== -1) {
             var selectedPiece = piecesModel.get(selectedPieceIndex);
 
-            // If the move is castling, handle castling logic
+            // If the move is castling (a special move for the king), handle castling logic
             if (selectedPiece.piece === "king" && (targetPosition === "6,7" || targetPosition === "2,7" || targetPosition === "6,0" || targetPosition === "2,0") && selectedPiece.hasMoved === false) {
                 handleCastling(selectedPiece, targetPosition);
             } else if (selectedPiece.piece === "king" || selectedPiece.piece === "rook") {
@@ -155,7 +183,7 @@ ApplicationWindow {
                     hasMoved: true
                 });
             } else {
-                // Standard move handling
+                // For other pieces, simply move them to the new position
                 piecesModel.set(selectedPieceIndex, {
                     piece: selectedPiece.piece,
                     color: selectedPiece.color,
@@ -163,36 +191,47 @@ ApplicationWindow {
                 });
             }
 
-            // Deselect the piece and reset highlights
+            // Deselect the piece and clear the highlighted moves after the move is completed
             window.selectedPiece = "";
             window.highlightedMoves = [];
 
-            // Switch turn after the move
+            // Switch the turn after the move
             window.currentPlayer = (window.currentPlayer === "white") ? "black" : "white";
 
-            // Check for checks after moving
+            // Check if the move results in a check condition
             gameState.checkForCheck()
         }
     }
 
-    // Automatically call handleCapture whenever pieceToCapture changes
+    /**
+	 * Automatically triggers the piece capture and movement process when the `pieceToCapture` property is updated.
+	 *
+	 * This handler first checks if a piece is selected and if there is a valid target piece to capture.
+	 * If both conditions are met, it performs the capture action and then moves the selected piece to the target position.
+	 */
     onPieceToCaptureChanged: {
+		// Check if a piece is currently selected
         if(window.selectedPiece !== ""){
-            // Piece not selected
+		
+            // Proceed only if there is a valid piece-to-capture target
             if(window.pieceToCapture !== ""){
                 var thePiecePos = window.pieceToCapture
-
+				
+				// Call the capture function to remove the enemy piece from the board
                 handleCapture();
-                // If a capture occurred, handle the movement
+				
+                // After capturing, move the selected piece to the target position
                 handlePieceMovement(window.selectedPiece, thePiecePos);
             }
         }
     }
-
+	
+	// Display the current player's turn
     TurnDisplay {
         currentPlayer: window.currentPlayer  // Pass currentPlayer to TurnDisplay
     }
-
+	
+	// Board container for displaying the chessboard
     Rectangle {
         id: boardContainer
         width: Math.min(window.width, window.height) * 0.8
@@ -201,7 +240,8 @@ ApplicationWindow {
         border.color: "black"
         border.width: width * 0.07
         color: "transparent"
-
+		
+		// Chessboard grid setup (8 rows and 8 columns)
         Grid {
             id: chessBoard
             rows: 8
@@ -210,13 +250,13 @@ ApplicationWindow {
             height: boardContainer.height - 10
             anchors.centerIn: boardContainer
 
-            // Draw chessboard
+            // Create 64 squares on the chessboard using Repeater
             Repeater {
                 model: 64
                 Rectangle {
                     width: chessBoard.width / 8
                     height: chessBoard.height / 8
-                    color: (index + Math.floor(index / 8)) % 2 === 0 ? "#ecede8" : "#c2c18f"
+                    color: (index + Math.floor(index / 8)) % 2 === 0 ? "#ecede8" : "#c2c18f" // Alternate colors for squares (light and dark)
                     border.color: "black"
                     x: (index % 8) * (chessBoard.width / 8)
                     y: Math.floor(index / 8) * (chessBoard.height / 8)
@@ -224,19 +264,23 @@ ApplicationWindow {
                     // Extract row and column from index
                     property int row: Math.floor(index / 8)
                     property int col: index % 8
-
+					
+					// Add interaction logic to select and move pieces
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
+							// Only proceed if a piece is selected
                             if (window.selectedPiece !== "") {
                                 var selectedPieceIndex = -1;
+								// Find the selected piece in the pieces model
                                 for (var i = 0; i < piecesModel.count; i++) {
                                     if (piecesModel.get(i).position === window.selectedPiece) {
                                         selectedPieceIndex = i;
                                         break;
                                     }
                                 }
-
+								
+								// If the piece is found, move it to the target position
                                 if (selectedPieceIndex !== -1) {
                                     var selectedPiece = piecesModel.get(selectedPieceIndex);
                                     var targetPosition = col + "," + row;
@@ -250,12 +294,13 @@ ApplicationWindow {
                 }
             }
 
-            // Highlights
+            // Highlights for valid moves
             Repeater {
                 model: 64
                 Rectangle {
                     width: chessBoard.width / 8
                     height: chessBoard.height / 8
+					// Highlight squares that are part of the valid moves list
                     color: (window.highlightedMoves.indexOf(index % 8 + "," + Math.floor(index / 8)) !== -1)
                            ? Qt.rgba(153/255, 204/255, 255/255, 0.5) // #99CCFF with 50% transparency
                            : "transparent"
@@ -267,7 +312,7 @@ ApplicationWindow {
 
             // Define chess pieces using ChessPiece component
             Repeater {
-                model: piecesModel
+                model: piecesModel // Model containing the chess pieces
                 delegate: ChessPiece {
                     piece: model.piece
                     color: model.color
@@ -276,15 +321,15 @@ ApplicationWindow {
                     x: (parseInt(model.position.split(',')[0])) * (chessBoard.width / 8)
                     y: (parseInt(model.position.split(',')[1])) * (chessBoard.height / 8)
 
-                    // Add logic to highlight the king if it's in check
+                    // Logic to highlight the king if it's in check
                     Rectangle {
                         anchors.fill: parent
-                        color: model.isInCheck && model.piece === "king" ? Qt.rgba(255, 0, 0, 0.5) : "transparent"
+                        color: model.isInCheck && model.piece === "king" ? Qt.rgba(255, 0, 0, 0.5) : "transparent" // Highlight king in check with a red overlay
                     }
                 }
             }
 
-            // Use ChessboardLabels component
+            // Use ChessboardLabels component to display coordinates on the chessboard
             ChessboardLabels {}
         }
     }
