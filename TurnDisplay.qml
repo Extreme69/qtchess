@@ -4,7 +4,7 @@ import QtQuick.Controls 2.15
 Rectangle {
     id: turnDisplayContainer
 
-    // Current player to display on the turn indicator
+    // Property to store the current player, either "white" or "black"
     property string currentPlayer: ""
 
     width: parent.width * 0.15
@@ -15,7 +15,7 @@ Rectangle {
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
 
-    // Text displaying the current turn information
+    // Text element to display the current player's turn (either "White's Turn" or "Black's Turn")
     Text {
         id: turnDisplay
         anchors.centerIn: parent
