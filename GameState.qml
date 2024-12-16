@@ -61,7 +61,7 @@ Item {
         return dx <= 1 && dy <= 1;
     }
 
-    function calculateValidMoves(piece, position, hasMoved, color, checkKing) {
+    function calculateValidMoves(piece, position, hasMoved, color, checkKing, checkPawnCaptures = false) {
         var moves = [];
         var col = parseInt(position.split(",")[0]);
         var row = parseInt(position.split(",")[1]);
@@ -198,6 +198,10 @@ Item {
                     var captureRow = row + direction;
                     if (isPositionInBounds(captureCol, captureRow)) {
                         var capturePos = captureCol + "," + captureRow;
+                        if(checkPawnCaptures === true){
+                            moves.push(capturePos); // Add a capture position (only for simulating)
+                        }
+
                         var pieceAtCapture = getPieceAtPosition(capturePos);
                         if (pieceAtCapture && pieceAtCapture.color !== color) {
                             moves.push(capturePos); // Add valid capture position
@@ -287,8 +291,15 @@ Item {
             // Exclude a piece if specified (used for simulations)
             if (piece === excludePiece || piece.color !== opponentColor) continue;
 
-            // Get the valid moves for this piece
-            var validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color, false);
+            var validMoves = []
+
+            // If it is the pawn check for pawn captures
+            if (piece.piece === "pawn"){
+                validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color, false, true);
+            }else{
+                // Get the valid moves for other pieces
+                validMoves = calculateValidMoves(piece.piece, piece.position, piece.hasMoved, piece.color, false);
+            }
 
             // Check if the square is under attack
             if (validMoves.includes(square)) {
