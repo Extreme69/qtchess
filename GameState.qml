@@ -74,11 +74,12 @@ Item {
             }
         }
 
-        console.log(piece.piece)
-        console.log(piece.color)
-        console.log(piece.position)
+        var validMoves = calculateValidMoves(piece, false, false, true, true);
 
-        var validMoves = calculateValidMoves(piece, false, false, true);
+        if(piece.piece === "pawn"){
+            console.log(validMoves)
+        }
+
         // Only consider moves that are in the line of attack of the checking piece
         for (var move of validMoves) {
             if (canBlockOrCapture(piece, move, opponentColor)) {
