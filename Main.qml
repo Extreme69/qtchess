@@ -144,7 +144,7 @@ ApplicationWindow {
             var selectedPiece = piecesModel.get(selectedPieceIndex);
 
             // If the move is castling, handle castling logic
-            if (selectedPiece.piece === "king" && (targetPosition === "6,7" || targetPosition === "2,7" || targetPosition === "6,0" || targetPosition === "2,0")) {
+            if (selectedPiece.piece === "king" && (targetPosition === "6,7" || targetPosition === "2,7" || targetPosition === "6,0" || targetPosition === "2,0") && selectedPiece.hasMoved === false) {
                 handleCastling(selectedPiece, targetPosition);
             } else if (selectedPiece.piece === "king" || selectedPiece.piece === "rook") {
                 // If the piece is a king or rook, mark it as moved
