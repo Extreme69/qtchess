@@ -13,6 +13,39 @@ ApplicationWindow {
     property string pieceToCapture: ""			// Track the enemy piece to capture
     property var highlightedMoves: []			// Array to store highlighted valid moves
 
+    property int whiteTime: 10   // 5 minutes (in seconds)
+    property int blackTime: 300   // 5 minutes (in seconds)
+
+    // Timer for White's turn
+    Timer {
+        id: whiteTimer
+        interval: 1000 // 1 second interval
+        running: window.currentPlayer === "white" && !gameState.gameOver
+        repeat: true
+        onTriggered: {
+            window.whiteTime -= 1
+            if (window.whiteTime <= 0) {
+                gameState.gameOver = true
+                gameState.winner = "Black"
+            }
+        }
+    }
+
+    // Timer for Black's turn
+    Timer {
+        id: blackTimer
+        interval: 1000 // 1 second interval
+        running: window.currentPlayer === "black" && !gameState.gameOver
+        repeat: true
+        onTriggered: {
+            window.blackTime -= 1
+            if (window.blackTime <= 0) {
+                gameState.gameOver = true
+                gameState.winner = "White"
+            }
+        }
+    }
+
 	// Instance of the GameState component to handle the game rules and logic
     GameState {
         id: gameState
@@ -167,6 +200,10 @@ ApplicationWindow {
         // Clear highlighted moves and selected pieces
         window.highlightedMoves = [];
         window.selectedPiece = "";
+
+        // Reset the timers
+        window.whiteTime = 300
+        window.blackTime = 300
     }
 
 	/**
@@ -340,111 +377,163 @@ ApplicationWindow {
         }
     }
 	
-	// Display the current player's turn
-    TurnDisplay {
-        currentPlayer: window.currentPlayer  // Pass currentPlayer to TurnDisplay
-    }
-	
-	// Board container for displaying the chessboard
-    Rectangle {
-        id: boardContainer
-        width: Math.min(window.width, window.height) * 0.8
-        height: width
-        anchors.centerIn: parent
-        border.color: "black"
-        border.width: width * 0.07
-        color: "transparent"
-		
-		// Chessboard grid setup (8 rows and 8 columns)
-        Grid {
-            id: chessBoard
-            rows: 8
-            columns: 8
-            width: boardContainer.width - 10
-            height: boardContainer.height - 10
-            anchors.centerIn: boardContainer
+    Column {
+        anchors.fill: parent
+        spacing: 20  // Adds space between the timer row and the chessboard
 
-            // Create 64 squares on the chessboard using Repeater
-            Repeater {
-                model: 64
-                Rectangle {
-                    width: chessBoard.width / 8
-                    height: chessBoard.height / 8
-                    color: (index + Math.floor(index / 8)) % 2 === 0 ? "#ecede8" : "#c2c18f" // Alternate colors for squares (light and dark)
-                    border.color: "black"
-                    x: (index % 8) * (chessBoard.width / 8)
-                    y: Math.floor(index / 8) * (chessBoard.height / 8)
+        // Timer and Turn Display Row
+        Row {
+            spacing: 20
+            anchors.horizontalCenter: parent.horizontalCenter
 
-                    // Extract row and column from index
-                    property int row: Math.floor(index / 8)
-                    property int col: index % 8
-					
-					// Add interaction logic to select and move pieces
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-							// Only proceed if a piece is selected
-                            if (window.selectedPiece !== "") {
-                                var selectedPieceIndex = -1;
-								// Find the selected piece in the pieces model
-                                for (var i = 0; i < piecesModel.count; i++) {
-                                    if (piecesModel.get(i).position === window.selectedPiece) {
-                                        selectedPieceIndex = i;
-                                        break;
+            // White Timer on the left
+            Rectangle {
+                width: 120
+                height: 50
+                color: "white"
+                border.color: "black"
+                border.width: 2
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "White: " + window.whiteTime
+                    font.pixelSize: 20
+                    color: "black"
+                }
+            }
+
+            // Turn display in the middle
+            TurnDisplay {
+                currentPlayer: window.currentPlayer  // Pass currentPlayer to TurnDisplay
+                width: 200
+                height: 50
+            }
+
+            // Black Timer on the right
+            Rectangle {
+                width: 120
+                height: 50
+                color: "white"
+                border.color: "black"
+                border.width: 2
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "Black: " + window.blackTime
+                    font.pixelSize: 20
+                    color: "black"
+                }
+            }
+        }
+
+        // Add a spacer here to push the chessboard down
+        Rectangle {
+            width: parent.width
+            height: 20
+            color: "transparent"
+        }
+
+        // Board container for displaying the chessboard
+        Rectangle {
+            id: boardContainer
+            width: Math.min(window.width, window.height) * 0.8
+            height: width
+            anchors.centerIn: parent
+            border.color: "black"
+            border.width: width * 0.07
+            color: "transparent"
+
+            // Chessboard grid setup (8 rows and 8 columns)
+            Grid {
+                id: chessBoard
+                rows: 8
+                columns: 8
+                width: boardContainer.width - 10
+                height: boardContainer.height - 10
+                anchors.centerIn: boardContainer
+
+                // Create 64 squares on the chessboard using Repeater
+                Repeater {
+                    model: 64
+                    Rectangle {
+                        width: chessBoard.width / 8
+                        height: chessBoard.height / 8
+                        color: (index + Math.floor(index / 8)) % 2 === 0 ? "#ecede8" : "#c2c18f" // Alternate colors for squares (light and dark)
+                        border.color: "black"
+                        x: (index % 8) * (chessBoard.width / 8)
+                        y: Math.floor(index / 8) * (chessBoard.height / 8)
+
+                        // Extract row and column from index
+                        property int row: Math.floor(index / 8)
+                        property int col: index % 8
+
+                        // Add interaction logic to select and move pieces
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                // Only proceed if a piece is selected
+                                if (window.selectedPiece !== "") {
+                                    var selectedPieceIndex = -1;
+                                    // Find the selected piece in the pieces model
+                                    for (var i = 0; i < piecesModel.count; i++) {
+                                        if (piecesModel.get(i).position === window.selectedPiece) {
+                                            selectedPieceIndex = i;
+                                            break;
+                                        }
                                     }
-                                }
-								
-								// If the piece is found, move it to the target position
-                                if (selectedPieceIndex !== -1) {
-                                    var selectedPiece = piecesModel.get(selectedPieceIndex);
-                                    var targetPosition = col + "," + row;
 
-                                    // Handle the piece movement to the target position
-                                    handlePieceMovement(selectedPiece.position, targetPosition);
+                                    // If the piece is found, move it to the target position
+                                    if (selectedPieceIndex !== -1) {
+                                        var selectedPiece = piecesModel.get(selectedPieceIndex);
+                                        var targetPosition = col + "," + row;
+
+                                        // Handle the piece movement to the target position
+                                        handlePieceMovement(selectedPiece.position, targetPosition);
+                                    }
                                 }
                             }
                         }
                     }
                 }
-            }
 
-            // Highlights for valid moves
-            Repeater {
-                model: 64
-                Rectangle {
-                    width: chessBoard.width / 8
-                    height: chessBoard.height / 8
-					// Highlight squares that are part of the valid moves list
-                    color: (window.highlightedMoves.indexOf(index % 8 + "," + Math.floor(index / 8)) !== -1)
-                           ? Qt.rgba(153/255, 204/255, 255/255, 0.5) // #99CCFF with 50% transparency
-                           : "transparent"
-                    z: 1
-                    x: (index % 8) * (chessBoard.width / 8)
-                    y: Math.floor(index / 8) * (chessBoard.height / 8)
-                }
-            }
-
-            // Define chess pieces using ChessPiece component
-            Repeater {
-                model: piecesModel // Model containing the chess pieces
-                delegate: ChessPiece {
-                    piece: model.piece
-                    color: model.color
-                    position: model.position
-                    hasMoved: model.hasMoved
-                    x: (parseInt(model.position.split(',')[0])) * (chessBoard.width / 8)
-                    y: (parseInt(model.position.split(',')[1])) * (chessBoard.height / 8)
-
-                    // Logic to highlight the king if it's in check
+                // Highlights for valid moves
+                Repeater {
+                    model: 64
                     Rectangle {
-                        anchors.fill: parent
-                        color: model.isInCheck && model.piece === "king" ? Qt.rgba(255, 0, 0, 0.5) : "transparent" // Highlight king in check with a red overlay
+                        width: chessBoard.width / 8
+                        height: chessBoard.height / 8
+                        // Highlight squares that are part of the valid moves list
+                        color: (window.highlightedMoves.indexOf(index % 8 + "," + Math.floor(index / 8)) !== -1)
+                               ? Qt.rgba(153/255, 204/255, 255/255, 0.5) // #99CCFF with 50% transparency
+                               : "transparent"
+                        z: 1
+                        x: (index % 8) * (chessBoard.width / 8)
+                        y: Math.floor(index / 8) * (chessBoard.height / 8)
                     }
                 }
-            }
 
-            // Use ChessboardLabels component to display coordinates on the chessboard
-            ChessboardLabels {}
+                // Define chess pieces using ChessPiece component
+                Repeater {
+                    model: piecesModel // Model containing the chess pieces
+                    delegate: ChessPiece {
+                        piece: model.piece
+                        color: model.color
+                        position: model.position
+                        hasMoved: model.hasMoved
+                        x: (parseInt(model.position.split(',')[0])) * (chessBoard.width / 8)
+                        y: (parseInt(model.position.split(',')[1])) * (chessBoard.height / 8)
+
+                        // Logic to highlight the king if it's in check
+                        Rectangle {
+                            anchors.fill: parent
+                            color: model.isInCheck && model.piece === "king" ? Qt.rgba(255, 0, 0, 0.5) : "transparent" // Highlight king in check with a red overlay
+                        }
+                    }
+                }
+
+                // Use ChessboardLabels component to display coordinates on the chessboard
+                ChessboardLabels {}
+            }
         }
     }
 }

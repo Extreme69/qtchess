@@ -11,9 +11,6 @@ Rectangle {
     height: parent.height * 0.05
     border.color: "black"
     border.width: 2
-    anchors.topMargin: 20
-    anchors.top: parent.top
-    anchors.horizontalCenter: parent.horizontalCenter
 
     // Text element to display the current player's turn (either "White's Turn" or "Black's Turn")
     Text {
