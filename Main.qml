@@ -25,8 +25,8 @@ ApplicationWindow {
         color: Qt.rgba(0, 0, 0, 0.7)
         z: 10
 
-        // This mouse area is here so that the players cant move the pieces when the game ended
-        MouseArea{
+        // This mouse area prevents interaction with the game after it ends
+        MouseArea {
             anchors.fill: parent
         }
 
@@ -34,22 +34,44 @@ ApplicationWindow {
             anchors.centerIn: parent
             spacing: 20
 
+            // Title Text (winner or draw message)
             Text {
                 text: gameState.winner === "draw" ? "It's a Draw!" : gameState.winner + " Wins!"
                 font.pixelSize: 40
                 color: "white"
                 horizontalAlignment: Text.AlignHCenter
+                font.bold: true
             }
 
+            // Play Again Button with enhanced styling
             Button {
                 text: "Play Again"
+                width: parent.width * 0.6
+                height: 50
+                anchors.horizontalCenter: parent.horizontalCenter
+                background: Rectangle {
+                    color: "#4CAF50"
+                    border.color: "#388E3C"
+                    border.width: 2
+                }
+                font.pixelSize: 18
                 onClicked: {
                     resetGame();
                 }
             }
 
+            // Exit Button with enhanced styling
             Button {
                 text: "Exit"
+                width: parent.width * 0.6
+                height: 50
+                anchors.horizontalCenter: parent.horizontalCenter
+                background: Rectangle {
+                    color: "#F44336"
+                    border.color: "#D32F2F"
+                    border.width: 2
+                }
+                font.pixelSize: 18
                 onClicked: {
                     Qt.quit();
                 }
