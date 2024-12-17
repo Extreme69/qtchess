@@ -1,7 +1,10 @@
 import QtQuick 2.15
 
 Item {
-	/**
+    property bool gameOver: false
+    property string winner: ""
+
+    /**
 	 * Retrieves the chess piece located at a specified position.
 	 *
 	 * @param {string} position - The board position to check.
@@ -188,7 +191,6 @@ Item {
         }
 		
 		// Return true if the move reveals a check, determined by `canBlockOrCapture`
-		console.log("IAM PUTTING THIS HERE SO I CAN CHECK THE COMMENTS I MADE ON THIS FUNCTION, IS THE FUNCTION RETURNING TRUE OR FALSE IF WE REVEAL A CHECK???");
         return !canBlockOrCapture(piece, move, oponentColor)
     }
 	
@@ -339,28 +341,31 @@ Item {
                 if(checkKing === false){
                     break;
                 }
-				
-				// King's movement is one square in any direction
+
+                // King's movement is one square in any direction
                 var directions = [
                     [1, 0], [-1, 0], [0, 1], [0, -1],
                     [1, 1], [-1, -1], [1, -1], [-1, 1]
                 ];
-				
-				// Loop through all possible movement directions for the king
+
+                console.log("We are moving the king again.")
+
+                // Loop through all possible movement directions for the king
                 directions.forEach(function(dir) {
                     var newCol = col + dir[0];
                     var newRow = row + dir[1];
-					
+
                     if (isPositionInBounds(newCol, newRow)) {
                         var newPosition = newCol + "," + newRow;
 
                         // Ensure the new position is not under threat by the opponent
                         if (!isSquareThreatened(newPosition, color === "white" ? "black" : "white")) {
+                            console.log("The king can move to a square without it beaing threatened: " + newPosition)
                             var pieceAtPosition = getPieceAtPosition(newPosition);
-							
+
                             // Only add valid moves (empty squares or capturing the opponent’s piece)
                             if (!pieceAtPosition || pieceAtPosition.color !== color) {
-							
+
                                 // Ensure the king isn't adjacent to the opponent's king (as it would be in check)
                                 var isAdjacentToOpponentKing = isAdjacent(newCol, newRow, opponentKing.position);
                                 if (!isAdjacentToOpponentKing) {
@@ -388,7 +393,7 @@ Item {
                         }
                     }
                     if (color === "black" && !piecesModel.get(2).hasMoved && !piecesModel.get(3).hasMoved) {
-						// Black side castling checks similar to white side
+                        // Black side castling checks similar to white side
                         if (!getPieceAtPosition("5,0") && !getPieceAtPosition("6,0") &&
                             !isSquareThreatened("4,0", "white") &&
                             !isSquareThreatened("5,0", "white") &&
@@ -548,6 +553,7 @@ Item {
 		
 		// If no escape or defense is possible, the king is in checkmate
         console.log("Checkmate! The king cannot escape.");
+        gameEnded(opponentColor)
         return true;
     }
 
@@ -638,5 +644,10 @@ Item {
 
         // Return true if the king is no longer in check, indicating the move resolves the check
         return !isKingStillInCheck;
+    }
+
+    function gameEnded(winnerColor){
+        gameOver = true
+        winner = winnerColor.charAt(0).toUpperCase() + winnerColor.slice(1);
     }
 }

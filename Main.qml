@@ -12,10 +12,49 @@ ApplicationWindow {
     property string selectedPiece: "" 			// Track the selected piece
     property string pieceToCapture: ""			// Track the enemy piece to capture
     property var highlightedMoves: []			// Array to store highlighted valid moves
-	
+
 	// Instance of the GameState component to handle the game rules and logic
     GameState {
         id: gameState
+    }
+
+    Rectangle {
+        id: winScreen
+        visible: gameState.gameOver
+        anchors.fill: parent
+        color: Qt.rgba(0, 0, 0, 0.7)
+        z: 10
+
+        // This mouse area is here so that the players cant move the pieces when the game ended
+        MouseArea{
+            anchors.fill: parent
+        }
+
+        Column {
+            anchors.centerIn: parent
+            spacing: 20
+
+            Text {
+                text: gameState.winner === "draw" ? "It's a Draw!" : gameState.winner + " Wins!"
+                font.pixelSize: 40
+                color: "white"
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Button {
+                text: "Play Again"
+                onClicked: {
+                    resetGame();
+                }
+            }
+
+            Button {
+                text: "Exit"
+                onClicked: {
+                    Qt.quit();
+                }
+            }
+        }
     }
 
     // Define chess pieces using a ListModel to store all pieces and their positions
@@ -54,7 +93,60 @@ ApplicationWindow {
         ListElement { piece: "pawn"; color: "white"; position: "6,6"; hasMoved: false }
         ListElement { piece: "pawn"; color: "white"; position: "7,6"; hasMoved: false }
     }
-	
+
+    function resetGame() {
+        // Reset all game state variables
+        gameState.gameOver = false;
+        gameState.winner = "";
+        window.currentPlayer = "white";
+
+        // Reset piece positions in piecesModel
+        piecesModel.clear();
+
+        // Append the pieces according to ListModel
+        piecesModel.append({ piece: "king", color: "white", position: "4,7", hasMoved: false, isInCheck: false });
+        piecesModel.append({ piece: "king", color: "black", position: "4,0", hasMoved: false, isInCheck: false });
+
+        piecesModel.append({ piece: "rook", color: "black", position: "0,0", hasMoved: false });
+        piecesModel.append({ piece: "rook", color: "black", position: "7,0", hasMoved: false });
+        piecesModel.append({ piece: "rook", color: "white", position: "0,7", hasMoved: false });
+        piecesModel.append({ piece: "rook", color: "white", position: "7,7", hasMoved: false });
+
+        piecesModel.append({ piece: "knight", color: "black", position: "1,0", hasMoved: false });
+        piecesModel.append({ piece: "bishop", color: "black", position: "2,0", hasMoved: false });
+        piecesModel.append({ piece: "queen", color: "black", position: "3,0", hasMoved: false });
+        piecesModel.append({ piece: "bishop", color: "black", position: "5,0", hasMoved: false });
+        piecesModel.append({ piece: "knight", color: "black", position: "6,0", hasMoved: false });
+
+        piecesModel.append({ piece: "knight", color: "white", position: "1,7", hasMoved: false });
+        piecesModel.append({ piece: "bishop", color: "white", position: "2,7", hasMoved: false });
+        piecesModel.append({ piece: "queen", color: "white", position: "3,7", hasMoved: false });
+        piecesModel.append({ piece: "bishop", color: "white", position: "5,7", hasMoved: false });
+        piecesModel.append({ piece: "knight", color: "white", position: "6,7", hasMoved: false });
+
+        piecesModel.append({ piece: "pawn", color: "black", position: "0,1", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "black", position: "1,1", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "black", position: "2,1", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "black", position: "3,1", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "black", position: "4,1", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "black", position: "5,1", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "black", position: "6,1", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "black", position: "7,1", hasMoved: false });
+
+        piecesModel.append({ piece: "pawn", color: "white", position: "0,6", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "white", position: "1,6", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "white", position: "2,6", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "white", position: "3,6", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "white", position: "4,6", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "white", position: "5,6", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "white", position: "6,6", hasMoved: false });
+        piecesModel.append({ piece: "pawn", color: "white", position: "7,6", hasMoved: false });
+
+        // Clear highlighted moves and selected pieces
+        window.highlightedMoves = [];
+        window.selectedPiece = "";
+    }
+
 	/**
 	 * Handles the capture of an enemy piece when a valid capture is made.
 	 *
