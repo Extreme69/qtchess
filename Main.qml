@@ -13,8 +13,8 @@ ApplicationWindow {
     property string pieceToCapture: ""			// Track the enemy piece to capture
     property var highlightedMoves: []			// Array to store highlighted valid moves
 
-    property int whiteTime: 10   // 5 minutes (in seconds)
-    property int blackTime: 300   // 5 minutes (in seconds)
+    property int whiteTime: 300                 // 5 minutes (in seconds)
+    property int blackTime: 300                 // 5 minutes (in seconds)
 
     // Timer for White's turn
     Timer {
@@ -149,6 +149,11 @@ ApplicationWindow {
         ListElement { piece: "pawn"; color: "white"; position: "7,6"; hasMoved: false }
     }
 
+    /**
+     * Resets the game state to its initial configuration.
+     * This includes resetting the game state variables, piece positions,
+     * and game timers, as well as clearing any selections and highlighted moves.
+     */
     function resetGame() {
         // Reset all game state variables
         gameState.gameOver = false;
