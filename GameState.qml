@@ -645,7 +645,13 @@ Item {
         // Return true if the king is no longer in check, indicating the move resolves the check
         return !isKingStillInCheck;
     }
-
+	
+	/**
+	 * Marks the game as ended and sets the winner.
+	 *
+	 * @param {string} winnerColor - The color of the winning player ("white" or "black").
+	 *                               The input is converted to title case for display purposes.
+	 */
     function gameEnded(winnerColor){
         gameOver = true
         winner = winnerColor.charAt(0).toUpperCase() + winnerColor.slice(1);
