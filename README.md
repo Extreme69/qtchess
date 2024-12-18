@@ -21,6 +21,7 @@ While the game is playable, minor bugs may still exist. These will be addressed 
       **Unfinished Features**
 ---------------------------------------
 Several features are planned for future implementation:
+
     - Pawn Promotion: Adding the ability to promote a pawn upon reaching the end of the board.
     - En Passant: Implementing the special pawn capture rule.
     - Draw Conditions: Recognizing and handling stalemates, threefold repetition, and insufficient material scenarios.
